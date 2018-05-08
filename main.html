@@ -1,0 +1,106 @@
+ <!doctype html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <title>Anonymous Room</title>
+    </head>
+   
+    <body style="background: #dfdfdf; width: 100%">
+        <div style="height: 1040px; min-width:1080px; max-width: 1440px; display: flex; flex-direction: column; margin:auto;">
+            <!-- top -->
+            <div style="height: 280px; border: 1px solid #d3d6db; margin: 12px; background-color: #fff;">
+                <!-- background image -->
+                <div style="height: 236px; background-image: url('https://imgur.com/GqtOtRm.png'); background-position: center 30%;">
+                    <!-- profile image -->
+                    <div style="border: solid 4px white; width: 208px; height: 208px; border-radius: 50%; position: relative; left: 44px; top: 76px; z-index: 2; overflow: hidden;">
+                        <img style="max-width: 100%; height: auto;" src="https://i.imgur.com/tAxNVWy.jpg" alt="Profile-img" />
+                    </div>
+                </div>
+                <div style="height: 44px" />
+            </div>
+            <!-- bottom -->
+            <div style="display: flex; margin-top: 12px; font-size: 10pt;">
+                <!-- left user info -->
+                <div style="position: sticky; height: 100%; width: 240px; top: 12px; display: flex; flex-direction: column; background-color: #fff; border: solid 1px #d3d6db;">
+                    <div style="font-size: 12pt; background-color: #f6f7f9; padding: 12px; font-weight: bold; border-bottom: solid 1px #d3d6db;">유저 정보</div>
+                    <div style="display: flex; padding: 8px; list-style: none;">
+                        <div style="width: 50%; padding-right: 24px; text-align: center">
+                            <li style="margin: 10px 0px">닉네임</li>
+                            <li style="margin: 10px 0px">항목1</li>
+                            <li style="margin: 10px 0px">항목2</li>
+                            <li style="margin: 10px 0px">내가쓴 글 수</li>
+                        </div>
+                        <div style="width: 50%;">
+                            <li style="margin: 10px 0px">@닉네임</li>
+                            <li style="margin: 10px 0px">@항목1</li>
+                            <li style="margin: 10px 0px">@항목2</li>
+                            <li style="margin: 10px 0px">@내가쓴 글 수</li>
+                        </div>
+                    </div>
+                </div>
+                <!-- middle memos form -->
+                <div style="display: flex; flex-direction: column; min-width: 520px; width: 100%; max-width: 900px; height: 100%; margin: 0px 12px;">
+                    <div style="padding: 12px; margin-bottom: 8px; border: solid 1px #d3d6db; background-color: #f6f7f9; font-size: 12pt; font-weight: bold;">작성한 메모</div>
+                    <!-- memos && hard coding -->
+                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
+                        <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
+                            <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
+                                <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
+                            </div>
+                            <div style="font-size: 12pt">
+                                <p style="margin: 4px 0px">@닉네임</p>
+                                <p style="margin: 4px 0px">@작성일[ex)2017년 10월 4일 오후 11시 22분]</p>
+                            </div>
+                        </div>
+                        <div style="font-size: 12pt; padding: 0px 12px">
+                            <p>글 1!</p>
+                        </div>
+                    </div>
+                    <!-- hard coding -->
+                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
+                        <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
+                            <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
+                                <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
+                            </div>
+                            <div style="font-size: 12pt">
+                                <p style="margin: 4px 0px">@이름</p>
+                                <p style="margin: 4px 0px">@작성일[ex)2017년 10월 4일 오후 11시 22분]</p>
+                            </div>
+                        </div>
+                        <div style="font-size: 12pt; padding: 0px 12px">
+                            <p>글 2!</p>
+                        </div>
+                    </div>
+                    <!-- hard coding -->
+                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
+                        <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
+                            <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
+                                <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
+                            </div>
+                            <div style="font-size: 12pt">
+                                <p style="margin: 4px 0px">@이름</p>
+                                <p style="margin: 4px 0px">@작성일[ex)2017년 10월 4일 오후 11시 22분]</p>
+                            </div>
+                        </div>
+                        <div style="font-size: 12pt; padding: 0px 12px">
+                            <p>글 3!</p>
+                        </div>
+                    </div>
+                    <!-- hard coding end -->
+                </div>
+                <!-- right noties -->
+                <div style="position: sticky; height: 100%; width: 300px; top: 12px; display: flex; flex-direction: column; background-color: #fff; border: solid 1px #d3d6db;">
+                    <div style="font-size: 12pt; background-color: #f6f7f9; padding: 12px; font-weight: bold; border-bottom: solid 1px #d3d6db;">알림</div>
+                    <div style="display: flex; flex-direction: column; list-style: none;">
+                        <div style="padding: 8px; border-bottom: solid 1px #d3d6db;">noties1</div>
+                        <div style="padding: 8px; border-bottom: solid 1px #d3d6db;">noties2</div>
+                        <div style="padding: 8px;">noties3</div>
+                    </div>
+                </div>
+                <!-- under end -->
+            </div>
+        </div>
+  </body>
+
+</html>

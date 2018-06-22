@@ -5,13 +5,19 @@
         <meta charset="utf-8">
         <title>Anonymous Room</title>
     </head>
-    <script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type= "text/javascript">
+    var count = 0;
     function submit_memo() {
         var text = document.getElementById("memo").value;
         var date = new Date();
         var created_at = date.getFullYear() + "년 " + (date.getMonth() + 1) + "월 " + date.getDate() + "일 " + date.getHours() + "시 " + date.getMinutes() + "분";
-        alert(text);
-        alert(created_at);
+        var output = '<div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;"><div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;"><div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;"><img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" /></div><div style="font-size: 12pt"><p style="margin: 4px 0px">@이름</p><p style="margin: 4px 0px">'+created_at+'</p></div></div><div style="font-size: 12pt; padding: 0px 12px"><p>'+text+'</p></div></div>'
+        count = count + 1;
+        $("#count").html(count);
+        $("#memos").append(output);
+        alert("메모가 등록되었습니다!")
+        document.getElementById("memo").value = "";
     }
     </script>
     <body style="background: #dfdfdf; width: 100%">
@@ -35,15 +41,11 @@
                     <div style="display: flex; padding: 8px; list-style: none;">
                         <div style="width: 50%; padding-right: 24px; text-align: center">
                             <li style="margin: 10px 0px">닉네임</li>
-                            <li style="margin: 10px 0px">항목1</li>
-                            <li style="margin: 10px 0px">항목2</li>
                             <li style="margin: 10px 0px">내가쓴 글 수</li>
                         </div>
                         <div style="width: 50%;">
                             <li style="margin: 10px 0px">@닉네임</li>
-                            <li style="margin: 10px 0px">@항목1</li>
-                            <li style="margin: 10px 0px">@항목2</li>
-                            <li style="margin: 10px 0px">@내가쓴 글 수</li>
+                            <li id="count" style="margin: 10px 0px"></li>
                         </div>
                     </div>
                 </div>
@@ -62,8 +64,9 @@
                     </div>
 
                     <div style="padding: 12px; border: solid 1px #d3d6db; background-color: #f6f7f9; font-size: 12pt; font-weight: bold;">작성한 메모</div>
+                    <div id="memos">
                     <!-- memos && hard coding -->
-                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
+                    <!-- <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
                         <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
                             <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
                                 <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
@@ -76,38 +79,9 @@
                         <div style="font-size: 12pt; padding: 0px 12px">
                             <p>글 1!</p>
                         </div>
-                    </div>
-                    <!-- hard coding -->
-                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
-                        <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
-                            <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
-                                <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
-                            </div>
-                            <div style="font-size: 12pt">
-                                <p style="margin: 4px 0px">@이름</p>
-                                <p style="margin: 4px 0px">@작성일[ex)2017년 10월 4일 오후 11시 22분]</p>
-                            </div>
-                        </div>
-                        <div style="font-size: 12pt; padding: 0px 12px">
-                            <p>글 2!</p>
-                        </div>
-                    </div>
-                    <!-- hard coding -->
-                    <div style="display: flex; flex-direction: column; border: solid 1px #d3d6db; background-color: #fff;">
-                        <div style="display: flex; height: 56px; padding: 12px; background-color: #f6f7f9; border-bottom: solid 1px #d3d6db;">
-                            <div style="width: 52px; height: 52px; border-radius: 50%; position: relative; margin-right: 8px; overflow: hidden;">
-                                <img src="https://i.imgur.com/tAxNVWy.jpg" style="max-width: 100%; height: auto" alt="Profile-img" />
-                            </div>
-                            <div style="font-size: 12pt">
-                                <p style="margin: 4px 0px">@이름</p>
-                                <p style="margin: 4px 0px">@작성일[ex)2017년 10월 4일 오후 11시 22분]</p>
-                            </div>
-                        </div>
-                        <div style="font-size: 12pt; padding: 0px 12px">
-                            <p>글 3!</p>
-                        </div>
-                    </div>
+                    </div> -->
                     <!-- hard coding end -->
+                    </div>
                 </div>
                 <!-- right noties -->
                 <div style="position: sticky; height: 100%; width: 300px; top: 12px; display: flex; flex-direction: column; background-color: #fff; border: solid 1px #d3d6db;">

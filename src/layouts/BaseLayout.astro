@@ -1,0 +1,88 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+    <script is:inline>
+      // 깜빡임 방지: 렌더 전에 테마를 확정한다
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme =
+        stored ?? (prefersDark ? 'dark' : 'light');
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <nav>
+        <a href="/" class="home">sGOM</a>
+        <div class="links">
+          <a href="/tags">태그</a>
+          <a href="/search">검색</a>
+          <a href="/about">소개</a>
+          <ThemeToggle />
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="container">
+      <p>© 2026 Heo SeokJin</p>
+    </footer>
+
+    <style>
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.25rem 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 2.5rem;
+      }
+      .home {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .links {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+      .links a {
+        color: var(--fg-muted);
+      }
+      footer {
+        margin-top: 5rem;
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--border);
+        color: var(--fg-muted);
+        font-size: 0.85rem;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { collectTags, sortByDate, filterDrafts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await getCollection('posts');
+  const posts = filterDrafts(all, import.meta.env.DEV);
+  return collectTags(posts).map(({ tag }) => ({
+    params: { tag },
+    props: { posts: sortByDate(posts.filter((p) => p.data.tags.includes(tag))) },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`${tag} | sGOM`} description={`${tag} 태그가 붙은 글`}>
+  <h1>#{tag}</h1>
+  {posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>

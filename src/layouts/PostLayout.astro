@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags } = post.data;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title={`${title} | sGOM`} description={description}>
+  <article data-pagefind-body>
+    <h1>{title}</h1>
+    <p class="meta">
+      <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
+      {updatedDate && <span>· {fmt(updatedDate)} 수정</span>}
+    </p>
+    <ul class="tags" data-pagefind-ignore>
+      {tags.map((tag) => (
+        <li><a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a></li>
+      ))}
+    </ul>
+
+    <slot name="series-top" />
+    <slot />
+    <slot name="series-bottom" />
+  </article>
+</BaseLayout>
+
+<style>
+  h1 {
+    margin-top: 0;
+  }
+  .meta {
+    color: var(--fg-muted);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1rem;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem;
+    font-size: 0.85rem;
+  }
+  .tags a {
+    color: var(--fg-muted);
+  }
+</style>

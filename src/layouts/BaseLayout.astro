@@ -54,14 +54,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </footer>
 
     <style>
+      header {
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 2.5rem;
+      }
       nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
         padding: 1.25rem 0;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 2.5rem;
       }
       .home {
         color: var(--fg);

@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { collectSeries, getSeriesPosts, filterDrafts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await getCollection('posts');
+  const posts = filterDrafts(all, import.meta.env.DEV);
+  return collectSeries(posts).map(({ name }) => ({
+    params: { name },
+    props: { posts: getSeriesPosts(posts, name) },
+  }));
+}
+
+const { name } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout title={`${name} | sGOM`} description={`${name} 시리즈`}>
+  <h1>{name}</h1>
+  <p class="lead">{posts.length}편, 순서대로 읽는 것을 권합니다.</p>
+  {posts.map((post) => <PostCard post={post} />)}
+</BaseLayout>
+
+<style>
+  .lead {
+    color: var(--fg-muted);
+    font-size: 0.9rem;
+  }
+</style>

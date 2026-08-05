@@ -3,6 +3,8 @@ title: 트랜잭션 격리 수준은 DBMS마다 다르게 동작합니다
 description: 표준 정의만 외우면 실무에서 틀리는 이유와, 테스트로 직접 확인한 기록
 pubDate: 2026-08-05
 tags: ["Database", "트랜잭션", "테스트"]
+series: "트랜잭션을 테스트로 확인하기"
+seriesOrder: 1
 ---
 
 ## 왜 필요한가

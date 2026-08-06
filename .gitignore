@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Pagefind
 /public/pagefind/
+
+# 검수 전 원고. 승인되면 src/content/posts/ 로 옮긴다.
+src/content/posts/_drafts/

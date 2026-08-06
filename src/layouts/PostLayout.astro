@@ -1,38 +1,71 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
 interface Props {
   post: CollectionEntry<'posts'>;
+  headings?: Heading[];
 }
 
-const { post } = Astro.props;
+const { post, headings = [] } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// 본문 섹션 헤딩은 ##(depth 2)이 기본이고 ###(depth 3)까지만 목차에 싣는다
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 ---
 
-<BaseLayout title={`${title} | sGOM`} description={description}>
-  <article data-pagefind-body>
-    <h1>{title}</h1>
-    <p class="meta">
-      <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
-      {updatedDate && <span>· {fmt(updatedDate)} 수정</span>}
-    </p>
-    <ul class="tags" data-pagefind-ignore>
-      {tags.map((tag) => (
-        <li><a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a></li>
-      ))}
-    </ul>
+<BaseLayout title={`${title} | sGOM`} description={description} wide>
+  <div class:list={['post-layout', tocHeadings.length === 0 && 'post-layout--no-toc']}>
+    <article data-pagefind-body class="post-content">
+      <h1>{title}</h1>
+      <p class="meta">
+        <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
+        {updatedDate && <span>· {fmt(updatedDate)} 수정</span>}
+      </p>
+      <ul class="tags" data-pagefind-ignore>
+        {tags.map((tag) => (
+          <li><a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a></li>
+        ))}
+      </ul>
 
-    <slot name="series-top" />
-    <slot />
-    <slot name="series-bottom" />
-  </article>
+      <slot name="series-top" />
+      <slot />
+      <slot name="series-bottom" />
+    </article>
+    <TableOfContents headings={tocHeadings} />
+  </div>
 </BaseLayout>
 
 <style>
+  .post-layout {
+    display: grid;
+    grid-template-columns: minmax(0, var(--content-width)) var(--toc-width);
+    justify-content: center;
+    gap: 3rem;
+    align-items: start;
+  }
+  .post-content {
+    min-width: 0;
+  }
+  .post-layout--no-toc {
+    grid-template-columns: minmax(0, var(--content-width));
+  }
+  @media (max-width: 1023px) {
+    .post-layout {
+      grid-template-columns: minmax(0, var(--content-width));
+    }
+  }
+
   h1 {
     margin-top: 0;
   }

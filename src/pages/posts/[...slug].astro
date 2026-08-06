@@ -14,11 +14,11 @@ export async function getStaticPaths() {
 }
 
 const { post, siblings } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const series = post.data.series;
 ---
 
-<PostLayout post={post}>
+<PostLayout post={post} headings={headings}>
   {series && (
     <SeriesNav
       slot="series-top"

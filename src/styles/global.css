@@ -5,7 +5,8 @@
   --border: #e5e5e5;
   --accent: #2563eb;
   --code-bg: #f6f8fa;
-  --content-width: 34rem;
+  --content-width: 44rem;
+  --toc-width: 14rem;
 }
 
 :root[data-theme='dark'] {
@@ -39,6 +40,12 @@ body {
   padding: 0 1.25rem;
 }
 
+/* 글 본문 페이지: 본문 + 우측 목차 묶음이 들어갈 폭. .container 자체의 좌우 padding(2.5rem)만큼
+   더 넓혀야 본문이 --content-width 그대로 렌더링된다 */
+.container--wide {
+  max-width: calc(var(--content-width) + var(--toc-width) + 3rem + 2.5rem);
+}
+
 a {
   color: var(--accent);
   text-decoration: none;
@@ -54,6 +61,11 @@ h1, h2, h3 {
 h1 { font-size: 1.7rem; }
 h2 { font-size: 1.3rem; }
 h3 { font-size: 1.1rem; }
+
+/* 목차 앵커 이동 시 헤딩이 화면 최상단에 바짝 붙어 헤더와 겹쳐 보이지 않도록 여유를 둔다 */
+h2, h3 {
+  scroll-margin-top: 5.5rem;
+}
 
 blockquote {
   margin: 1.5rem 0;

@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="소개 | sGOM" description="백엔드 개발자 허석진의 기술 블로그 소개">
+  <h1>소개</h1>
+
+  <p>
+    허석진 (sGOM)<br />
+    백엔드 개발자
+  </p>
+
+  <h2>경력</h2>
+
+  <p class="meta">브레인즈컴퍼니(주) 차세대 솔루션 개발팀 · 2025.02 ~ 재직 중</p>
+
+  <p>
+    IT 인프라 통합 관리 솔루션의 차세대 재개발 프로젝트에서 백엔드 API와 도메인 로직을
+    개발하고 있습니다. 담당 도메인의 데이터 정합성과 권한 처리 기준을 정비하는 일을 맡고
+    있습니다.
+  </p>
+
+  <h2>관심사</h2>
+
+  <p>
+    같은 데이터를 조회했는데 결과가 다른 이유를 찾는 일에 관심이 많습니다. 정렬 기준,
+    집계 로직, 기본값 처리처럼 눈에 잘 띄지 않는 곳에서 원인이 나오는 경우가 많았습니다.
+    개별 증상을 막기보다 도메인을 관통하는 기준을 세우는 쪽을 선호합니다.
+  </p>
+
+  <p>
+    트랜잭션 전파와 격리 수준, 동시성 처리를 공부하고 있습니다. 문서로 읽고 넘기는 대신
+    테스트 코드로 재현해 실제 동작을 확인하는 방식으로 정리하고 있습니다. 이 블로그의
+    글도 대부분 그 기록입니다.
+  </p>
+
+  <h2>기술 스택</h2>
+
+  <ul>
+    <li>Languages: Kotlin, Java</li>
+    <li>Framework: Spring Boot, Spring Framework</li>
+    <li>Database: PostgreSQL, MySQL, MyBatis, JPA(Hibernate)</li>
+    <li>Test: JUnit5, Kotest</li>
+    <li>Tooling: Git, Docker, Linux, AWS</li>
+  </ul>
+
+  <h2>연락</h2>
+
+  <ul>
+    <li>GitHub: <a href="https://github.com/sGOM">https://github.com/sGOM</a></li>
+    <li>Email: <a href="mailto:pooh6195@naver.com">pooh6195@naver.com</a></li>
+  </ul>
+</BaseLayout>
+
+<style>
+  .meta {
+    color: var(--fg-muted);
+    font-size: 0.9rem;
+  }
+</style>

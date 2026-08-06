@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # playwright-mcp artifacts
 .playwright-mcp/
+
+# Pagefind
+/public/pagefind/

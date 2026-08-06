@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="검색 | sGOM" description="글 검색">
+  <h1>검색</h1>
+  <p class="hint">
+    조사가 붙은 어절은 따로 인식됩니다. "트랜잭션이"보다 "트랜잭션"으로 검색하면 잘 찾습니다.
+  </p>
+  <div id="search"></div>
+</BaseLayout>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<script is:inline src="/pagefind/pagefind-ui.js"></script>
+<script is:inline>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof PagefindUI === 'undefined') {
+      document.getElementById('search').textContent =
+        '검색 색인은 빌드 후에 생성됩니다. npm run build && npm run preview 로 확인하세요.';
+      return;
+    }
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      showImages: false,
+      translations: {
+        placeholder: '검색어를 입력하세요',
+        zero_results: '"[SEARCH_TERM]"에 대한 결과가 없습니다',
+      },
+    });
+  });
+</script>
+
+<style>
+  .hint {
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+  }
+  #search {
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--fg);
+    --pagefind-ui-background: var(--bg);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-font: inherit;
+  }
+</style>

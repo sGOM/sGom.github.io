@@ -42,7 +42,7 @@ src/
 ├── lib/posts.ts                      # 정렬·필터·태그·카테고리 집계 (순수 함수)
 ├── pages/
 └── styles/global.css
-templates/                            # 글 템플릿 2종
+templates/                            # 글 템플릿 3종
 docs/superpowers/                     # 설계 스펙과 구현 계획
 ```
 
@@ -66,10 +66,11 @@ docs/superpowers/                     # 설계 스펙과 구현 계획
 
 frontmatter 필수 필드는 `title`, `description`, `pubDate`, `category`, `tags`다. 누락되면 빌드가 실패한다. `tags`에는 `기본개념`, `파고들기`, `오답노트` 중 정확히 하나를 그룹 태그로 포함해야 하며, 없거나 둘 이상이면 빌드가 실패한다. 카테고리 목록은 별도 파일 없이 각 글의 `category` 값에서 계산되므로, 새 이름을 쓰면 그대로 새 카테고리가 생긴다.
 
-템플릿은 두 가지다.
+템플릿은 세 가지다. 각 템플릿의 섹션은 필수와 선택으로 나뉘어 있고, 선택 섹션은 해당 없으면 지운다.
 
-- [`templates/troubleshooting.md`](templates/troubleshooting.md) — 답을 모르는 상태에서 시작해 알아낸 글
-- [`templates/concept.md`](templates/concept.md) — 이미 답을 알고 정리하는 글
+- [`templates/basics.md`](templates/basics.md) — 기본이 되는 개념을 표와 짧은 설명으로 정리하는 글
+- [`templates/deep-dive.md`](templates/deep-dive.md) — 기본개념으로 간단히 설명하기 어렵거나 더 깊이 다루는 글
+- [`templates/troubleshooting.md`](templates/troubleshooting.md) — 실제로 겪은 문제 상황의 파악과 해결 과정
 
 말투 규칙, 검수 절차, 코드 수정 시 지켜야 할 제약은 [`CLAUDE.md`](CLAUDE.md)에 있다.
 

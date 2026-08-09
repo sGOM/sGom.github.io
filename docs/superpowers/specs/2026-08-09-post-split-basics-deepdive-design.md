@@ -52,6 +52,14 @@ frontmatter 필드를 새로 만들지 않는다. 본문 링크로 한다. 템�
 
 ## 템플릿 분리
 
+**이 절은 [그룹 3종 템플릿과 선택 섹션](2026-08-09-group-templates-design.md)이 대체한다.**
+아래 고정 섹션 목록은 폐기됐다. 새 스펙은 섹션을 필수와 선택으로 나눠 글의 성격에 맞게 고를 수
+있게 하고, 세 템플릿의 섹션 구성을 전부 정의한다. 이 작업의 1단계(아래 「절차」)는 그 스펙을
+따른다.
+
+<details>
+<summary>폐기된 원안</summary>
+
 `templates/concept.md`를 없애고 두 개로 나눈다. `templates/troubleshooting.md`는 오답노트용으로
 그대로 둔다.
 
@@ -65,6 +73,8 @@ templates/deep-dive.md        파고들기
 
 templates/troubleshooting.md  오답노트 (변경 없음)
 ```
+
+</details>
 
 각 템플릿 frontmatter의 `tags` 첫 항목에 해당 그룹 태그를 미리 적어 둔다.
 

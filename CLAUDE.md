@@ -86,6 +86,7 @@ npm run build   # 스키마 검증 + 검색 인덱스
 **승인 없이 초안을 발행 위치로 옮기지 않는다. 커밋도 하지 않는다.**
 
 1. `src/content/posts/_drafts/<슬러그>/index.md`에 원고를 쓴다. frontmatter에 `draft: true`를 넣는다.
+   초안도 스키마 검증 대상이므로 그룹 태그를 처음부터 넣어야 `npm run build`가 통과한다.
 2. `npm run dev`를 띄우고 사용자에게 주소를 알린다. 개발 서버는 초안을 렌더하지만 `npm run build`는 제외한다.
 3. 사용자가 읽고 판단한다. **여기서 멈춘다.**
 4. 승인되면 디렉터리를 옮기고 `draft: true`를 지운 뒤, 위 3개 명령을 돌리고 커밋한다.

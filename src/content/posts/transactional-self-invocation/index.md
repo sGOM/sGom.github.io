@@ -2,7 +2,7 @@
 title: 같은 클래스 안에서 부른 @Transactional은 왜 동작하지 않을까
 description: Spring AOP의 프록시 기반 동작을 테스트로 확인했다
 pubDate: 2026-08-07
-tags: ["Spring", "트랜잭션", "AOP"]
+tags: ["파고들기", "Spring", "트랜잭션", "AOP"]
 category: "Spring"
 ---
 

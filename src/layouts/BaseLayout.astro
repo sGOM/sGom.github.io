@@ -34,7 +34,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body>
-    <header class="container">
+    <header class:list={['container', wide && 'container--wide']}>
       <nav>
         <a href="/" class="home">sGOM</a>
         <div class="links">
@@ -50,7 +50,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
 
-    <footer class="container">
+    <footer class:list={['container', wide && 'container--wide']}>
       <p>© 2026 Heo SeokJin</p>
     </footer>
 

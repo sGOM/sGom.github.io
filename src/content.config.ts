@@ -9,20 +9,15 @@ const posts = defineCollection({
     // 'transaction-isolation-levels/index.md' -> 'transaction-isolation-levels'
     generateId: ({ entry }) => entry.replace(/\/index\.md$/, ''),
   }),
-  schema: z
-    .object({
-      title: z.string(),
-      description: z.string(),
-      pubDate: z.coerce.date(),
-      tags: z.array(z.string()).nonempty(),
-      updatedDate: z.coerce.date().optional(),
-      draft: z.boolean().default(false),
-      series: z.string().optional(),
-      seriesOrder: z.number().int().positive().optional(),
-    })
-    .refine((d) => (d.series === undefined) === (d.seriesOrder === undefined), {
-      message: 'series와 seriesOrder는 함께 있거나 함께 없어야 합니다',
-    }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    category: z.string(),
+    tags: z.array(z.string()).nonempty(),
+    updatedDate: z.coerce.date().optional(),
+    draft: z.boolean().default(false),
+  }),
 });
 
 export const collections = { posts };

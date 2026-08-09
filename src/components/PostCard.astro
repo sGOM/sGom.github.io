@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, tags, series, draft } = post.data;
+const { title, description, pubDate, tags, category, draft } = post.data;
 ---
 
 <article>
@@ -19,12 +19,8 @@ const { title, description, pubDate, tags, series, draft } = post.data;
     <time datetime={pubDate.toISOString()}>
       {pubDate.toLocaleDateString('ko-KR')}
     </time>
-    {series && (
-      <>
-        <span>·</span>
-        <a href={`/series/${encodeURIComponent(series)}/`}>{series}</a>
-      </>
-    )}
+    <span>·</span>
+    <a href={`/categories/${encodeURIComponent(category)}/`}>{category}</a>
     <span>·</span>
     <span>{tags.join(', ')}</span>
   </p>

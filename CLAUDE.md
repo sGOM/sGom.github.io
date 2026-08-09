@@ -34,13 +34,18 @@
 | `title` | O | |
 | `description` | O | 목록과 검색 결과에 노출된다 |
 | `pubDate` | O | `2026-08-05` 형식 |
+| `category` | O | 글 하나에 하나만. 홈 좌측 목록을 만든다 |
 | `tags` | O | 최소 1개 |
 | `updatedDate` | X | |
 | `draft` | X | `true`면 개발 서버에서만 보인다 |
-| `series` | X | `seriesOrder`와 반드시 함께 |
-| `seriesOrder` | X | `series`와 반드시 함께. 1부터 |
 
-`series`만 쓰고 `seriesOrder`를 빠뜨리면 빌드가 실패한다.
+카테고리는 큰 분류, 태그는 세부 주제다. 카테고리 목록은 별도 파일 없이 글의 `category` 값에서
+계산되므로, 새 이름을 쓰면 그대로 새 카테고리가 생긴다. 오타가 곧 새 카테고리가 되니 기존 값을
+먼저 확인한다.
+
+```bash
+grep -h "^category:" src/content/posts/*/index.md | sort -u
+```
 
 ### 4. 말투
 
@@ -57,7 +62,7 @@
 
 ```bash
 npm run dev     # 렌더 확인
-npm test        # 목록/태그/시리즈 로직
+npm test        # 목록/태그/카테고리 로직
 npm run build   # 스키마 검증 + 검색 인덱스
 ```
 
@@ -81,7 +86,7 @@ mv src/content/posts/_drafts/<슬러그> src/content/posts/<슬러그>
 
 ## 코드를 고칠 때
 
-- 목록·태그·시리즈 계산은 `src/lib/posts.ts`에 순수 함수로 둔다. `astro:content`를 import 하지 않는다. 그래야 Vitest로 테스트할 수 있다.
+- 목록·태그·카테고리 계산은 `src/lib/posts.ts`에 순수 함수로 둔다. `astro:content`를 import 하지 않는다. 그래야 Vitest로 테스트할 수 있다.
 - 로직을 추가하면 `src/lib/posts.test.ts`에 테스트를 먼저 쓴다.
 - `astro.config.mjs`에 `base`를 넣지 않는다. 사용자 페이지 repo라 루트에 배포된다.
 - 검색 인덱스는 `npm run build`가 만든다. `npm run dev`에서는 검색이 동작하지 않는다. `npm run preview`로 확인한다.

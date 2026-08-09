@@ -3,8 +3,7 @@ title: 같은 클래스 안에서 부른 @Transactional은 왜 동작하지 않�
 description: Spring AOP의 프록시 기반 동작을 테스트로 확인했다
 pubDate: 2026-08-07
 tags: ["Spring", "트랜잭션", "AOP"]
-series: "트랜잭션을 테스트로 확인하기"
-seriesOrder: 3
+category: "Spring"
 ---
 
 ## 왜 필요한가
@@ -43,7 +42,41 @@ Given("주입받은 빈의 정체") {
 }
 ```
 
-다음은 같은 클래스 안에서 `this`로 호출한 경우다. 저장 후 예외를 던지는 메서드에 `@Transactional`이 붙어 있지만, 자기 호출이라 프록시를 거치지 않으므로 트랜잭션이 열리지 않고 저장이 그대로 커밋된다.
+검증 대상 서비스의 구조는 다음과 같다. 같은 메서드를 두 경로로 부른다.
+
+```kotlin
+@Service
+class SelfInvocationService(
+    // 자기 자신을 프록시로 다시 얻기 위한 지연 조회.
+    // 생성자에서 자기 타입을 그대로 받으면 순환 참조가 된다
+    private val self: ObjectProvider<SelfInvocationService>,
+) {
+    // 저장한 뒤 예외를 던진다. 트랜잭션이 걸렸다면 이 save 는 롤백돼야 한다
+    @Transactional
+    fun transactionalWork() {
+        save(MESSAGE)
+        throw RuntimeException()
+    }
+
+    // 지금 트랜잭션이 열려 있는지 찍어서 돌려준다
+    @Transactional
+    fun transactionalSnapshot(): TxSnapshot = txProbe.snapshot()
+
+    // 경로 1 — this 로 직접 호출한다
+    fun callInternally() = transactionalWork()
+    fun snapshotViaInternalCall() = transactionalSnapshot()
+
+    // 경로 2 — 프록시를 거쳐 호출한다
+    fun callThroughProxy() = self.getObject().transactionalWork()
+    fun snapshotViaProxy() = self.getObject().transactionalSnapshot()
+}
+```
+
+두 경로는 **같은 메서드를 부른다.** 다른 것은 `this`를 거치느냐 프록시를 거치느냐뿐이다.
+
+트랜잭션이 실제로 열렸는지는 `snapshot`으로 확인한다. 스프링의 트랜잭션 상태는 전부 `TransactionSynchronizationManager`의 ThreadLocal에 들어 있으므로, `actualTransactionActive`는 `isActualTransactionActive()`를, `transactionName`은 `getCurrentTransactionName()`을 그대로 담은 값이다. 코드에서 추측한 것이 아니라 스프링 자신이 답한 결과다. `transactionName`은 보통 `클래스명.메서드명` 형태라, 어느 메서드가 트랜잭션을 열었는지까지 드러난다.
+
+먼저 경로 1이다. 저장 후 예외를 던지는 메서드에 `@Transactional`이 붙어 있지만, 자기 호출이라 프록시를 거치지 않으므로 트랜잭션이 열리지 않고 저장이 그대로 커밋된다.
 
 ```kotlin
 Given("같은 클래스 안에서 this 로 @Transactional 메서드를 호출할 때") {
@@ -68,7 +101,7 @@ Given("같은 클래스 안에서 this 로 @Transactional 메서드를 호출할
 }
 ```
 
-반대로 자기 자신을 프록시로 다시 주입받아(`ObjectProvider`) 그 프록시로 같은 메서드를 호출하면, 이번에는 호출이 프록시를 거치므로 트랜잭션이 정상적으로 열리고 예외 발생 시 롤백도 일어난다. 컨트롤러 같은 외부에서 호출하는 경우와 트랜잭션 동작 방식이 동일하다.
+경로 2다. 호출이 프록시를 거치므로 트랜잭션이 정상적으로 열리고, 예외가 발생하면 롤백도 일어난다. 컨트롤러 같은 외부에서 호출하는 경우와 트랜잭션 동작 방식이 동일하다.
 
 ```kotlin
 Given("자기 자신을 프록시로 주입받아 호출할 때") {

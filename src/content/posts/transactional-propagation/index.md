@@ -3,8 +3,7 @@ title: 예외를 잡았는데 왜 롤백될까
 description: "@Transactional 전파 속성과 rollback-only 표시를 테스트로 확인했다"
 pubDate: 2026-08-06
 tags: ["Spring", "트랜잭션", "테스트"]
-series: "트랜잭션을 테스트로 확인하기"
-seriesOrder: 2
+category: "Spring"
 ---
 
 ## 왜 필요한가
@@ -36,9 +35,32 @@ REQUIRED로 참여한 안쪽 메서드에서 예외가 발생하면, 그 예외�
 
 ## 직접 확인
 
-같은 시나리오 — 안쪽에서 예외가 발생하고 바깥이 try-catch로 잡는 경우 — 를 REQUIRED와 REQUIRES_NEW로 각각 실행한 테스트다. Spring Boot + Kotlin + Kotest 환경에서 검증했다.
+검증한 시나리오는 하나다. 바깥이 저장하고, 안쪽을 부르고, 안쪽이 저장한 뒤 예외를 던지고, 바깥이 그 예외를 잡은 다음 복구용 저장을 한 번 더 한다. 여기서 안쪽의 전파 속성만 바꿔가며 결과를 비교한다. Spring Boot + Kotlin + Kotest 환경에서 확인했다.
 
-REQUIRED로 참여한 경우, 안쪽 예외는 바깥에서 잡히지만 rollback-only 오염 때문에 커밋 시점에 실패한다.
+구조는 다음과 같다.
+
+```kotlin
+@Transactional                            // 바깥: REQUIRED (기본값)
+fun outer() {
+    save(OUTER_MESSAGE)                   // ①
+    try {
+        inner()
+    } catch (e: RuntimeException) {
+        // 잡았다. 바깥은 이대로 정상 종료로 향한다
+    }
+    save(RECOVERY_MESSAGE)                // ② 예외를 처리했으니 복구 작업을 이어서 한다
+}
+
+@Transactional(propagation = REQUIRED)    // 안쪽: 바깥 트랜잭션에 참여한다
+fun inner() {
+    save(INNER_MESSAGE)                   // ③
+    throw RuntimeException()
+}
+```
+
+관전 포인트는 저장 ①②③의 생사다. 바깥이 예외를 잡고 정상 종료하므로 직관적으로는 셋 다 남아야 한다.
+
+결과는 다르다. 셋 다 사라지고, 그 전에 커밋 자체가 실패한다.
 
 ```kotlin
 When("안쪽이 예외를 던지고 바깥이 그 예외를 try-catch 로 삼키면") {
@@ -57,7 +79,17 @@ When("안쪽이 예외를 던지고 바깥이 그 예외를 try-catch 로 삼키
 }
 ```
 
-REQUIRES_NEW로 호출한 경우, 안쪽은 별도의 물리 트랜잭션이므로 안쪽만 롤백되고 바깥은 오염 없이 정상 커밋된다.
+`count()`가 0이라는 것은 ①②③이 전부 사라졌다는 뜻이다. 예외가 안쪽 프록시를 빠져나온 순간 공유 트랜잭션에 rollback-only가 찍혔고, 바깥이 예외를 잡은 것도 그 뒤에 실행한 ②도 이미 정해진 결말을 되돌리지 못한다.
+
+이제 안쪽의 전파 속성 한 줄만 바꾼다. 바깥 코드는 그대로다.
+
+```kotlin
+@Transactional(propagation = REQUIRES_NEW)   // 안쪽: 별도의 물리 트랜잭션을 연다
+fun inner() {
+    save(INNER_MESSAGE)
+    throw RuntimeException()
+}
+```
 
 ```kotlin
 When("안쪽이 예외를 던지고 바깥이 그 예외를 잡으면") {
@@ -72,6 +104,10 @@ When("안쪽이 예외를 던지고 바깥이 그 예외를 잡으면") {
     }
 }
 ```
+
+③(`INNER_MESSAGE`)만 0으로 사라지고, ①(`OUTER_MESSAGE`)과 ②(`RECOVERY_MESSAGE`)는 각각 1로 남는다. 안쪽이 별도의 물리 트랜잭션이라 롤백 범위가 안쪽에 갇히고, 바깥은 오염되지 않아 예외를 잡고 복구까지 마칠 수 있다.
+
+두 결과를 가른 것은 `propagation` 한 줄뿐이다.
 
 저장소: [github.com/sGOM/spring-transactional-test](https://github.com/sGOM/spring-transactional-test)
 

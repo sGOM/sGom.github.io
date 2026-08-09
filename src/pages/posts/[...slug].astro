@@ -1,41 +1,21 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
-import SeriesNav from '../../components/SeriesNav.astro';
-import { filterDrafts, getSeriesPosts } from '../../lib/posts';
+import { filterDrafts } from '../../lib/posts';
 
 export async function getStaticPaths() {
   const all = await getCollection('posts');
   const posts = filterDrafts(all, import.meta.env.DEV);
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: { post, siblings: post.data.series ? getSeriesPosts(posts, post.data.series) : [] },
+    props: { post },
   }));
 }
 
-const { post, siblings } = Astro.props;
+const { post } = Astro.props;
 const { Content, headings } = await render(post);
-const series = post.data.series;
 ---
 
 <PostLayout post={post} headings={headings}>
-  {series && (
-    <SeriesNav
-      slot="series-top"
-      series={series}
-      posts={siblings}
-      current={post}
-      position="top"
-    />
-  )}
   <Content />
-  {series && (
-    <SeriesNav
-      slot="series-bottom"
-      series={series}
-      posts={siblings}
-      current={post}
-      position="bottom"
-    />
-  )}
 </PostLayout>

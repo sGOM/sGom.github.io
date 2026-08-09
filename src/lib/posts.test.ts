@@ -3,9 +3,7 @@ import {
   sortByDate,
   filterDrafts,
   collectTags,
-  getSeriesPosts,
-  getSeriesNeighbors,
-  collectSeries,
+  collectCategories,
   type PostLike,
 } from './posts';
 
@@ -19,6 +17,7 @@ function post(
       title: id,
       pubDate: new Date('2026-01-01'),
       tags: ['기타'],
+      category: '기타',
       draft: false,
       ...overrides,
     },
@@ -75,58 +74,33 @@ describe('collectTags', () => {
   });
 });
 
-describe('getSeriesPosts', () => {
-  it('같은 시리즈 글을 seriesOrder 순으로 반환한다', () => {
+describe('collectCategories', () => {
+  it('카테고리별 글 수를 센다', () => {
     const posts = [
-      post('c', { series: 'JVM', seriesOrder: 3 }),
-      post('a', { series: 'JVM', seriesOrder: 1 }),
-      post('other', { series: 'DB', seriesOrder: 1 }),
-      post('b', { series: 'JVM', seriesOrder: 2 }),
+      post('a', { category: 'Spring' }),
+      post('b', { category: 'Spring' }),
+      post('c', { category: '데이터베이스' }),
     ];
-    expect(getSeriesPosts(posts, 'JVM').map((p) => p.id)).toEqual(['a', 'b', 'c']);
+    expect(collectCategories(posts)).toEqual([
+      { category: 'Spring', count: 2 },
+      { category: '데이터베이스', count: 1 },
+    ]);
   });
 
-  it('시리즈가 없는 글은 포함하지 않는다', () => {
-    const posts = [post('none'), post('a', { series: 'JVM', seriesOrder: 1 })];
-    expect(getSeriesPosts(posts, 'JVM')).toHaveLength(1);
-  });
-});
-
-describe('getSeriesNeighbors', () => {
-  const posts = [
-    post('a', { series: 'JVM', seriesOrder: 1 }),
-    post('b', { series: 'JVM', seriesOrder: 2 }),
-    post('c', { series: 'JVM', seriesOrder: 3 }),
-  ];
-
-  it('가운데 글은 앞뒤가 모두 있다', () => {
-    const { prev, next } = getSeriesNeighbors(posts, posts[1]);
-    expect(prev?.id).toBe('a');
-    expect(next?.id).toBe('c');
-  });
-
-  it('첫 글의 prev는 null이다', () => {
-    expect(getSeriesNeighbors(posts, posts[0]).prev).toBeNull();
-  });
-
-  it('마지막 글의 next는 null이다', () => {
-    expect(getSeriesNeighbors(posts, posts[2]).next).toBeNull();
-  });
-
-  it('시리즈에 속하지 않은 글은 양쪽 다 null이다', () => {
-    const { prev, next } = getSeriesNeighbors(posts, post('solo'));
-    expect(prev).toBeNull();
-    expect(next).toBeNull();
-  });
-});
-
-describe('collectSeries', () => {
-  it('시리즈 이름과 글 수를 반환한다', () => {
+  it('같은 개수면 가나다순으로 정렬한다', () => {
     const posts = [
-      post('a', { series: 'JVM', seriesOrder: 1 }),
-      post('b', { series: 'JVM', seriesOrder: 2 }),
-      post('c'),
+      post('a', { category: '서버' }),
+      post('b', { category: '네트워크' }),
+      post('c', { category: '데이터베이스' }),
     ];
-    expect(collectSeries(posts)).toEqual([{ name: 'JVM', count: 2 }]);
+    expect(collectCategories(posts).map((c) => c.category)).toEqual([
+      '네트워크',
+      '데이터베이스',
+      '서버',
+    ]);
+  });
+
+  it('글이 없으면 빈 배열이다', () => {
+    expect(collectCategories([])).toEqual([]);
   });
 });

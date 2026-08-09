@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { post, headings = [] } = Astro.props;
-const { title, description, pubDate, updatedDate, tags } = post.data;
+const { title, description, pubDate, updatedDate, tags, category } = post.data;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -27,6 +27,9 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 <BaseLayout title={`${title} | sGOM`} description={description} wide>
   <div class:list={['post-layout', tocHeadings.length === 0 && 'post-layout--no-toc']}>
     <article data-pagefind-body class="post-content">
+      <p class="category" data-pagefind-ignore>
+        <a href={`/categories/${encodeURIComponent(category)}/`}>{category}</a>
+      </p>
       <h1>{title}</h1>
       <p class="meta">
         <time datetime={pubDate.toISOString()}>{fmt(pubDate)}</time>
@@ -38,9 +41,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
         ))}
       </ul>
 
-      <slot name="series-top" />
       <slot />
-      <slot name="series-bottom" />
     </article>
     <TableOfContents headings={tocHeadings} />
   </div>
@@ -49,7 +50,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 <style>
   .post-layout {
     display: grid;
-    grid-template-columns: minmax(0, var(--content-width)) var(--toc-width);
+    grid-template-columns: minmax(0, var(--content-width)) var(--aside-width);
     justify-content: center;
     gap: 3rem;
     align-items: start;
@@ -66,6 +67,11 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     }
   }
 
+  .category {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
   h1 {
     margin-top: 0;
   }

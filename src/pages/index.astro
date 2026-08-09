@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ListLayout from '../layouts/ListLayout.astro';
-import { sortByDate, filterDrafts, collectCategories } from '../lib/posts';
+import { sortByDate, filterDrafts, buildGroupTree } from '../lib/posts';
 
 const all = await getCollection('posts');
 const visible = filterDrafts(all, import.meta.env.DEV);
@@ -12,6 +12,6 @@ const posts = sortByDate(visible);
   title="sGOM"
   description="개발하며 겪은 문제와 공부한 개념을 남깁니다"
   posts={posts}
-  categories={collectCategories(visible)}
+  groups={buildGroupTree(visible)}
   total={visible.length}
 />

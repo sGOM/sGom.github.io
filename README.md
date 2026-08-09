@@ -50,9 +50,11 @@ docs/superpowers/                     # 설계 스펙과 구현 계획
 
 | 경로 | 내용 |
 |---|---|
-| `/` | 글 목록, 좌측 카테고리 |
+| `/` | 글 목록, 좌측 그룹-카테고리 2-depth 트리 |
 | `/posts/<슬러그>/` | 본문, 우측 목차 |
+| `/groups/<그룹>/` | 그룹별 목록 |
 | `/categories/<카테고리>/` | 카테고리별 목록 |
+| `/categories/<카테고리>/<그룹>/` | 카테고리 안에서 그룹으로 좁힌 목록 |
 | `/tags/` `/tags/<태그>/` | 태그 목록과 태그별 목록 |
 | `/search` | 검색 |
 | `/about` | 소개 |
@@ -62,7 +64,7 @@ docs/superpowers/                     # 설계 스펙과 구현 계획
 
 초안은 `src/content/posts/_drafts/<슬러그>/index.md`에 쓴다. 이 디렉터리는 gitignore 대상이라 검수 전 원고가 저장소에 들어가지 않는다. 승인되면 `src/content/posts/<슬러그>/`로 옮기고 `draft: true`를 지운다.
 
-frontmatter 필수 필드는 `title`, `description`, `pubDate`, `category`, `tags`다. 누락되면 빌드가 실패한다. 카테고리 목록은 별도 파일 없이 각 글의 `category` 값에서 계산되므로, 새 이름을 쓰면 그대로 새 카테고리가 생긴다.
+frontmatter 필수 필드는 `title`, `description`, `pubDate`, `category`, `tags`다. 누락되면 빌드가 실패한다. `tags`에는 `기본개념`, `파고들기`, `오답노트` 중 정확히 하나를 그룹 태그로 포함해야 하며, 없거나 둘 이상이면 빌드가 실패한다. 카테고리 목록은 별도 파일 없이 각 글의 `category` 값에서 계산되므로, 새 이름을 쓰면 그대로 새 카테고리가 생긴다.
 
 템플릿은 두 가지다.
 

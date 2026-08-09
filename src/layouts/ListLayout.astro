@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
 import CategoryList from '../components/CategoryList.astro';
 import PostCard from '../components/PostCard.astro';
+import type { GroupNode } from '../lib/posts';
 
 interface Props {
   title: string;
@@ -10,20 +11,20 @@ interface Props {
   /** 목록 위에 노출할 제목. 홈에서는 생략한다 */
   heading?: string;
   posts: CollectionEntry<'posts'>[];
-  categories: { category: string; count: number }[];
+  groups: GroupNode[];
   total: number;
-  /** 현재 카테고리. 홈이면 넘기지 않는다 */
-  current?: string;
+  /** 현재 위치. 홈이면 넘기지 않는다 */
+  current?: { group?: string; category?: string };
 }
 
-const { title, description, heading, posts, categories, total, current } =
+const { title, description, heading, posts, groups, total, current } =
   Astro.props;
 ---
 
 <BaseLayout title={title} description={description} wide>
   <div class="list-layout">
     <div class="list-aside">
-      <CategoryList categories={categories} total={total} current={current} />
+      <CategoryList groups={groups} total={total} current={current} />
     </div>
     <div class="list-main">
       {heading && <h1>{heading}</h1>}

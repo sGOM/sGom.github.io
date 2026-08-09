@@ -2,7 +2,7 @@
 title: 예외를 잡았는데 왜 롤백될까
 description: "@Transactional 전파 속성과 rollback-only 표시를 테스트로 확인했다"
 pubDate: 2026-08-06
-tags: ["Spring", "트랜잭션", "테스트"]
+tags: ["파고들기", "Spring", "트랜잭션", "테스트"]
 category: "Spring"
 ---
 

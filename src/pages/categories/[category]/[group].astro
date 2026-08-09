@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import ListLayout from '../../../layouts/ListLayout.astro';
+import {
+  groupOf,
+  buildGroupTree,
+  sortByDate,
+  filterDrafts,
+} from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await getCollection('posts');
+  const posts = filterDrafts(all, import.meta.env.DEV);
+  const groups = buildGroupTree(posts);
+  // 글이 1편 이상인 (카테고리, 그룹) 조합만 만든다
+  return groups.flatMap(({ group, categories }) =>
+    categories.map(({ category }) => ({
+      params: { category, group },
+      props: {
+        posts: sortByDate(
+          posts.filter(
+            (p) => p.data.category === category && groupOf(p) === group
+          )
+        ),
+        groups,
+        total: posts.length,
+      },
+    }))
+  );
+}
+
+const { category, group } = Astro.params;
+const { posts, groups, total } = Astro.props;
+---
+
+<ListLayout
+  title={`${group} · ${category} | sGOM`}
+  description={`${group} 그룹의 ${category} 카테고리 글`}
+  heading={`${group} · ${category}`}
+  posts={posts}
+  groups={groups}
+  total={total}
+  current={{ group, category }}
+/>

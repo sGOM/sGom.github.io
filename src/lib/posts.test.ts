@@ -4,6 +4,10 @@ import {
   filterDrafts,
   collectTags,
   collectCategories,
+  GROUPS,
+  groupOf,
+  buildGroupTree,
+  hasExactlyOneGroupTag,
   type PostLike,
 } from './posts';
 
@@ -102,5 +106,109 @@ describe('collectCategories', () => {
 
   it('글이 없으면 빈 배열이다', () => {
     expect(collectCategories([])).toEqual([]);
+  });
+});
+
+describe('groupOf', () => {
+  it('tags에 있는 그룹 태그를 반환한다', () => {
+    expect(groupOf(post('a', { tags: ['파고들기', 'Spring'] }))).toBe('파고들기');
+  });
+
+  it('그룹 태그의 위치와 무관하게 찾아낸다', () => {
+    expect(groupOf(post('a', { tags: ['Spring', '트랜잭션', '오답노트'] }))).toBe(
+      '오답노트'
+    );
+  });
+
+  it('그룹 태그가 없으면 undefined를 반환한다', () => {
+    expect(groupOf(post('a', { tags: ['Spring'] }))).toBeUndefined();
+  });
+});
+
+describe('hasExactlyOneGroupTag', () => {
+  it('그룹 태그가 정확히 하나면 true다', () => {
+    expect(hasExactlyOneGroupTag(['Spring', '기본개념'])).toBe(true);
+  });
+
+  it('그룹 태그가 없으면 false다', () => {
+    expect(hasExactlyOneGroupTag(['Spring', 'JPA'])).toBe(false);
+  });
+
+  it('그룹 태그가 둘 이상이면 false다', () => {
+    expect(hasExactlyOneGroupTag(['기본개념', '오답노트'])).toBe(false);
+  });
+});
+
+describe('buildGroupTree', () => {
+  it('글이 없어도 그룹 3개를 모두 만든다', () => {
+    expect(buildGroupTree([])).toEqual([
+      { group: '기본개념', count: 0, categories: [] },
+      { group: '파고들기', count: 0, categories: [] },
+      { group: '오답노트', count: 0, categories: [] },
+    ]);
+  });
+
+  it('그룹 순서는 건수와 무관하게 GROUPS 순서를 따른다', () => {
+    const posts = [
+      post('a', { tags: ['오답노트'] }),
+      post('b', { tags: ['오답노트'] }),
+      post('c', { tags: ['기본개념'] }),
+    ];
+    expect(buildGroupTree(posts).map((g) => g.group)).toEqual([...GROUPS]);
+  });
+
+  it('그룹별 글 수를 센다', () => {
+    const posts = [
+      post('a', { tags: ['기본개념'] }),
+      post('b', { tags: ['파고들기'] }),
+      post('c', { tags: ['파고들기'] }),
+    ];
+    expect(buildGroupTree(posts).map((g) => g.count)).toEqual([1, 2, 0]);
+  });
+
+  it('하위 카테고리를 건수 내림차순으로 정렬한다', () => {
+    const posts = [
+      post('a', { tags: ['기본개념'], category: 'Spring' }),
+      post('b', { tags: ['기본개념'], category: 'Spring' }),
+      post('c', { tags: ['기본개념'], category: '데이터베이스' }),
+    ];
+    const basics = buildGroupTree(posts)[0];
+    expect(basics.count).toBe(3);
+    expect(basics.categories).toEqual([
+      { category: 'Spring', count: 2 },
+      { category: '데이터베이스', count: 1 },
+    ]);
+  });
+
+  it('건수가 같으면 카테고리 이름 가나다순으로 정렬한다', () => {
+    const posts = [
+      post('a', { tags: ['파고들기'], category: '서버' }),
+      post('b', { tags: ['파고들기'], category: '네트워크' }),
+      post('c', { tags: ['파고들기'], category: '데이터베이스' }),
+    ];
+    expect(buildGroupTree(posts)[1].categories.map((c) => c.category)).toEqual([
+      '네트워크',
+      '데이터베이스',
+      '서버',
+    ]);
+  });
+
+  it('다른 그룹의 글은 서로 섞이지 않는다', () => {
+    const posts = [
+      post('a', { tags: ['기본개념'], category: 'Spring' }),
+      post('b', { tags: ['오답노트'], category: 'Spring' }),
+    ];
+    const tree = buildGroupTree(posts);
+    expect(tree[0].categories).toEqual([{ category: 'Spring', count: 1 }]);
+    expect(tree[2].categories).toEqual([{ category: 'Spring', count: 1 }]);
+  });
+
+  it('그룹 태그가 없는 글은 어느 그룹에도 들어가지 않는다', () => {
+    const posts = [post('a', { tags: ['Spring'] })];
+    expect(buildGroupTree(posts)).toEqual([
+      { group: '기본개념', count: 0, categories: [] },
+      { group: '파고들기', count: 0, categories: [] },
+      { group: '오답노트', count: 0, categories: [] },
+    ]);
   });
 });

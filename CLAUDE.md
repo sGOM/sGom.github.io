@@ -12,10 +12,13 @@
 
 ### 1. 템플릿 고르기
 
-- **답을 모르는 상태에서 시작해 알아낸 글** → `templates/troubleshooting.md`
-- **이미 답을 알고 정리하는 글** → `templates/concept.md`
+- **기본이 되는 개념을 표와 짧은 설명으로 정리하는 글** → `templates/basics.md`
+- **기본개념으로 간단히 설명하기 어렵거나 더 깊이 다루는 글** → `templates/deep-dive.md`
+- **실제로 겪은 문제 상황의 파악과 해결 과정** → `templates/troubleshooting.md`
 
 애매하면 물어본다. 임의로 정하지 않는다.
+
+세 템플릿 모두 섹션이 필수와 선택으로 나뉘어 있다. 선택 섹션은 해당 없으면 지운다.
 
 ### 2. 파일 위치
 

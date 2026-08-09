@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { parseRssItems } from './profile-readme';
+import {
+  parseRssItems,
+  renderPostList,
+  replaceMarkedSection,
+  LIST_START,
+  LIST_END,
+  type RssItem,
+} from './profile-readme';
 
 function item(title: string, slug: string, pubDate: string): string {
   return (
@@ -73,5 +80,85 @@ describe('parseRssItems', () => {
     const xml = feed([broken, item('정상', 'ok', 'Wed, 05 Aug 2026 00:00:00 GMT')]);
 
     expect(parseRssItems(xml, 5).map((i) => i.title)).toEqual(['정상']);
+  });
+});
+
+describe('renderPostList', () => {
+  const item = (title: string, slug: string, date: string): RssItem => ({
+    title,
+    link: `https://sgom.github.io/posts/${slug}/`,
+    pubDate: new Date(date),
+  });
+
+  it('제목·링크·날짜를 마크다운 목록으로 만든다', () => {
+    const result = renderPostList([
+      item('트랜잭션과 ACID', 'transaction-and-acid', '2026-08-05T00:00:00Z'),
+      item('격리 수준', 'isolation-levels', '2026-08-04T00:00:00Z'),
+    ]);
+
+    expect(result).toBe(
+      '- [트랜잭션과 ACID](https://sgom.github.io/posts/transaction-and-acid/) · 2026-08-05\n' +
+        '- [격리 수준](https://sgom.github.io/posts/isolation-levels/) · 2026-08-04'
+    );
+  });
+
+  it('제목의 대괄호를 이스케이프해 링크 문법을 지킨다', () => {
+    const result = renderPostList([item('MySQL [8.0] 이야기', 'mysql', '2026-08-05T00:00:00Z')]);
+
+    expect(result).toContain('[MySQL \\[8.0\\] 이야기]');
+  });
+
+  it('글이 없으면 안내 문구를 낸다', () => {
+    expect(renderPostList([])).toBe('_아직 발행한 글이 없다._');
+  });
+
+  it('시간대와 무관하게 UTC 기준 날짜를 쓴다', () => {
+    const result = renderPostList([item('글', 'a', '2026-08-05T00:00:00Z')]);
+
+    expect(result).toContain('· 2026-08-05');
+  });
+});
+
+describe('replaceMarkedSection', () => {
+  const readme = (inner: string) =>
+    `# 제목\n\n## 최신 글\n\n${LIST_START}\n${inner}\n${LIST_END}\n\n## 그 다음\n`;
+
+  it('마커 사이를 새 블록으로 갈아끼운다', () => {
+    const result = replaceMarkedSection(readme('- 예전 글'), '- 새 글');
+
+    expect(result).toBe(readme('- 새 글'));
+  });
+
+  it('마커 밖의 내용은 건드리지 않는다', () => {
+    const result = replaceMarkedSection(readme('- 예전 글'), '- 새 글');
+
+    expect(result).toContain('# 제목');
+    expect(result).toContain('## 그 다음');
+  });
+
+  it('마커 사이가 비어 있어도 삽입한다', () => {
+    const source = `${LIST_START}\n${LIST_END}`;
+
+    expect(replaceMarkedSection(source, '- 새 글')).toBe(
+      `${LIST_START}\n- 새 글\n${LIST_END}`
+    );
+  });
+
+  it('시작 마커가 없으면 예외를 던진다', () => {
+    expect(() => replaceMarkedSection(`# 제목\n${LIST_END}`, '- 글')).toThrow(
+      /마커/
+    );
+  });
+
+  it('끝 마커가 없으면 예외를 던진다', () => {
+    expect(() => replaceMarkedSection(`# 제목\n${LIST_START}`, '- 글')).toThrow(
+      /마커/
+    );
+  });
+
+  it('마커 순서가 뒤집혀 있으면 예외를 던진다', () => {
+    expect(() =>
+      replaceMarkedSection(`${LIST_END}\n${LIST_START}`, '- 글')
+    ).toThrow(/마커/);
   });
 });

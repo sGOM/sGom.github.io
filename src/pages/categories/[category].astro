@@ -1,24 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 import ListLayout from '../../layouts/ListLayout.astro';
-import { collectCategories, sortByDate, filterDrafts } from '../../lib/posts';
+import {
+  collectCategories,
+  buildGroupTree,
+  sortByDate,
+  filterDrafts,
+} from '../../lib/posts';
 
 export async function getStaticPaths() {
   const all = await getCollection('posts');
   const posts = filterDrafts(all, import.meta.env.DEV);
-  const categories = collectCategories(posts);
-  return categories.map(({ category }) => ({
+  const groups = buildGroupTree(posts);
+  return collectCategories(posts).map(({ category }) => ({
     params: { category },
     props: {
       posts: sortByDate(posts.filter((p) => p.data.category === category)),
-      categories,
+      groups,
       total: posts.length,
     },
   }));
 }
 
 const { category } = Astro.params;
-const { posts, categories, total } = Astro.props;
+const { posts, groups, total } = Astro.props;
 ---
 
 <ListLayout
@@ -26,7 +31,7 @@ const { posts, categories, total } = Astro.props;
   description={`${category} 카테고리의 글`}
   heading={category}
   posts={posts}
-  categories={categories}
+  groups={groups}
   total={total}
-  current={category}
+  current={{ category }}
 />

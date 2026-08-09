@@ -1,29 +1,53 @@
 ---
+import type { GroupNode } from '../lib/posts';
+
 interface Props {
-  categories: { category: string; count: number }[];
+  groups: GroupNode[];
   total: number;
-  /** 현재 보고 있는 카테고리. 홈(전체보기)이면 넘기지 않는다 */
-  current?: string;
+  /** 현재 위치. 홈(전체보기)이면 넘기지 않는다 */
+  current?: { group?: string; category?: string };
 }
 
-const { categories, total, current } = Astro.props;
+const { groups, total, current } = Astro.props;
 ---
 
 <aside class="category-list" data-pagefind-ignore aria-label="카테고리">
-  <ul>
+  <ul class="groups">
     <li>
       <a href="/" class:list={[current === undefined && 'is-current']}>
         전체보기 <span class="count">({total})</span>
       </a>
     </li>
-    {categories.map(({ category, count }) => (
+    {groups.map(({ group, count, categories }) => (
       <li>
         <a
-          href={`/categories/${encodeURIComponent(category)}/`}
-          class:list={[current === category && 'is-current']}
+          href={`/groups/${encodeURIComponent(group)}/`}
+          class:list={[
+            current?.group === group &&
+              current?.category === undefined &&
+              'is-current',
+          ]}
         >
-          {category} <span class="count">({count})</span>
+          {group} <span class="count">({count})</span>
         </a>
+        {categories.length > 0 && (
+          <ul class="categories">
+            {categories.map(({ category, count }) => (
+              <li>
+                <a
+                  href={`/categories/${encodeURIComponent(category)}/${encodeURIComponent(group)}/`}
+                  class:list={[
+                    current?.group === group &&
+                      current?.category === category &&
+                      'is-current',
+                  ]}
+                >
+                  {category} <span class="count">({count})</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </li>
     ))}
   </ul>
@@ -40,12 +64,29 @@ const { categories, total, current } = Astro.props;
   }
 
   ul {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .groups {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  /* 2-depth. 세로선으로 들여쓰기를 드러낸다 */
+  .categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--border);
+  }
+
+  .categories a {
+    font-size: 0.85rem;
   }
 
   a {
@@ -65,7 +106,9 @@ const { categories, total, current } = Astro.props;
     font-size: 0.8rem;
   }
 
-  /* 좁은 화면에서는 본문 위로 접어 올린다 */
+  /* 좁은 화면에서는 본문 위로 접어 올린다.
+     2-depth는 가로로 못 펴므로 그룹마다 한 줄을 차지하고
+     그 줄 안에서 하위 카테고리가 가로로 흐른다 */
   @media (max-width: 899px) {
     .category-list {
       position: static;
@@ -74,10 +117,22 @@ const { categories, total, current } = Astro.props;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
     }
-    ul {
+    .groups {
+      gap: 0.75rem;
+    }
+    .groups > li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+    }
+    .categories {
       flex-direction: row;
       flex-wrap: wrap;
       gap: 0.5rem 1rem;
+      margin-top: 0;
+      padding-left: 0;
+      border-left: 0;
     }
   }
 </style>

@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { collectTags, filterDrafts } from '../../lib/posts';
+
+const all = await getCollection('posts');
+const tags = collectTags(filterDrafts(all, import.meta.env.DEV));
+---
+
+<BaseLayout title="태그 | sGOM" description="태그 목록">
+  <h1>태그</h1>
+  <ul>
+    {tags.map(({ tag, count }) => (
+      <li>
+        <a href={`/tags/${encodeURIComponent(tag)}/`}>{tag}</a>
+        <span class="count">{count}</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+  }
+  li {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .count {
+    color: var(--fg-muted);
+    margin-left: 0.35rem;
+    font-size: 0.8rem;
+  }
+</style>

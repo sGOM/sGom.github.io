@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import ListLayout from '../../layouts/ListLayout.astro';
+import { collectCategories, sortByDate, filterDrafts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const all = await getCollection('posts');
+  const posts = filterDrafts(all, import.meta.env.DEV);
+  const categories = collectCategories(posts);
+  return categories.map(({ category }) => ({
+    params: { category },
+    props: {
+      posts: sortByDate(posts.filter((p) => p.data.category === category)),
+      categories,
+      total: posts.length,
+    },
+  }));
+}
+
+const { category } = Astro.params;
+const { posts, categories, total } = Astro.props;
+---
+
+<ListLayout
+  title={`${category} | sGOM`}
+  description={`${category} 카테고리의 글`}
+  heading={category}
+  posts={posts}
+  categories={categories}
+  total={total}
+  current={category}
+/>

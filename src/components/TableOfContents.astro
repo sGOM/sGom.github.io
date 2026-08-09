@@ -1,0 +1,79 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <aside class="post-toc" data-pagefind-ignore aria-label="목차">
+    <p class="post-toc-title">목차</p>
+    <ul>
+      {headings.map((h) => (
+        <li class:list={['post-toc-item', h.depth >= 3 && 'post-toc-item--sub']}>
+          <a href={`#${h.slug}`}>{h.text}</a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .post-toc {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    font-size: 0.85rem;
+  }
+
+  .post-toc-title {
+    margin: 0 0 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--fg-muted);
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 1px solid var(--border);
+  }
+
+  .post-toc-item {
+    padding-left: 0.75rem;
+  }
+
+  .post-toc-item--sub {
+    padding-left: 1.75rem;
+  }
+
+  .post-toc-item a {
+    color: var(--fg-muted);
+    line-height: 1.4;
+  }
+
+  .post-toc-item a:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 1023px) {
+    .post-toc {
+      display: none;
+    }
+  }
+</style>

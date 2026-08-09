@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, tags, category, draft } = post.data;
+---
+
+<article>
+  <h2>
+    <a href={`/posts/${post.id}/`}>{title}</a>
+    {draft && <span class="badge">초안</span>}
+  </h2>
+  <p class="desc">{description}</p>
+  <p class="meta">
+    <time datetime={pubDate.toISOString()}>
+      {pubDate.toLocaleDateString('ko-KR')}
+    </time>
+    <span>·</span>
+    <a href={`/categories/${encodeURIComponent(category)}/`}>{category}</a>
+    <span>·</span>
+    <span>{tags.join(', ')}</span>
+  </p>
+</article>
+
+<style>
+  article {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+  }
+  h2 a {
+    color: var(--fg);
+  }
+  .desc {
+    margin: 0 0 0.5rem;
+    color: var(--fg-muted);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+  }
+  .badge {
+    font-size: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.3rem;
+    color: var(--fg-muted);
+    vertical-align: middle;
+  }
+</style>

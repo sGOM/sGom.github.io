@@ -1,17 +1,17 @@
 ---
+import { getCollection } from 'astro:content';
+import ListLayout from '../layouts/ListLayout.astro';
+import { sortByDate, filterDrafts, collectCategories } from '../lib/posts';
 
+const all = await getCollection('posts');
+const visible = filterDrafts(all, import.meta.env.DEV);
+const posts = sortByDate(visible);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<ListLayout
+  title="sGOM"
+  description="개발하며 겪은 문제와 공부한 개념을 남깁니다"
+  posts={posts}
+  categories={collectCategories(visible)}
+  total={visible.length}
+/>

@@ -3,7 +3,7 @@ title:
 description:
 pubDate:
 category:
-tags: []
+tags: ["오답노트"]
 ---
 
 ## 상황

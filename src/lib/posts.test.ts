@@ -7,6 +7,7 @@ import {
   GROUPS,
   groupOf,
   buildGroupTree,
+  hasExactlyOneGroupTag,
   type PostLike,
 } from './posts';
 
@@ -121,6 +122,20 @@ describe('groupOf', () => {
 
   it('그룹 태그가 없으면 undefined를 반환한다', () => {
     expect(groupOf(post('a', { tags: ['Spring'] }))).toBeUndefined();
+  });
+});
+
+describe('hasExactlyOneGroupTag', () => {
+  it('그룹 태그가 정확히 하나면 true다', () => {
+    expect(hasExactlyOneGroupTag(['Spring', '기본개념'])).toBe(true);
+  });
+
+  it('그룹 태그가 없으면 false다', () => {
+    expect(hasExactlyOneGroupTag(['Spring', 'JPA'])).toBe(false);
+  });
+
+  it('그룹 태그가 둘 이상이면 false다', () => {
+    expect(hasExactlyOneGroupTag(['기본개념', '오답노트'])).toBe(false);
   });
 });
 

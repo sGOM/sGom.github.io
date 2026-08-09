@@ -11,10 +11,14 @@ interface Props {
 const { groups, total, current } = Astro.props;
 ---
 
-<aside class="category-list" data-pagefind-ignore aria-label="카테고리">
+<aside class="category-list" data-pagefind-ignore aria-label="글 목록 탐색">
   <ul class="groups">
     <li>
-      <a href="/" class:list={[current === undefined && 'is-current']}>
+      <a
+        href="/"
+        class:list={[current === undefined && 'is-current']}
+        aria-current={current === undefined ? 'page' : undefined}
+      >
         전체보기 <span class="count">({total})</span>
       </a>
     </li>
@@ -27,6 +31,11 @@ const { groups, total, current } = Astro.props;
               current?.category === undefined &&
               'is-current',
           ]}
+          aria-current={
+            current?.group === group && current?.category === undefined
+              ? 'page'
+              : undefined
+          }
         >
           {group} <span class="count">({count})</span>
         </a>
@@ -41,6 +50,11 @@ const { groups, total, current } = Astro.props;
                       current?.category === category &&
                       'is-current',
                   ]}
+                  aria-current={
+                    current?.group === group && current?.category === category
+                      ? 'page'
+                      : undefined
+                  }
                 >
                   {category} <span class="count">({count})</span>
                 </a>

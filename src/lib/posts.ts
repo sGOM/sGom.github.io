@@ -57,12 +57,17 @@ export type GroupNode = {
   categories: { category: string; count: number }[];
 };
 
+/** 그룹 태그가 정확히 하나인지. content.config.ts의 .refine()이 쓴다 */
+export function hasExactlyOneGroupTag(tags: readonly string[]): boolean {
+  return tags.filter((t) => GROUPS.some((g) => g === t)).length === 1;
+}
+
 /**
- * tags에서 그룹 태그를 찾는다.
- * 스키마가 "정확히 하나"를 보장하므로 실제로는 항상 값이 나온다.
+ * tags에서 그룹 태그를 찾는다. 여러 개면 먼저 나오는 것을 반환한다.
+ * 스키마가 "정확히 하나"를 강제하므로, 실제 글에서는 항상 값이 나온다.
  */
 export function groupOf(post: PostLike): string | undefined {
-  return post.data.tags.find((t) => (GROUPS as readonly string[]).includes(t));
+  return post.data.tags.find((t) => GROUPS.some((g) => g === t));
 }
 
 /** GROUPS 순서로 고정된 2-depth 트리를 만든다. 글이 0개인 그룹도 남긴다 */

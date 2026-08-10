@@ -136,11 +136,16 @@ scratchpad 파일은 blog repo 밖이므로 커밋하지 않는다.
   - `export type RssItem = { title: string; link: string; pubDate: Date }`
   - `export function parseRssItems(xml: string, limit: number): RssItem[]`
 
-`@astrojs/rss`가 만드는 RSS는 각 항목이 아래 형태다. `title`은 CDATA로 감싸이고 `link`와 `pubDate`는 평문이다.
+`@astrojs/rss`가 만드는 RSS는 각 항목이 아래 형태다. 실제 배포된 피드
+(`https://sgom.github.io/rss.xml`)를 직접 확인한 결과다 — `title`은 CDATA로 감싸이지 **않고**
+평문이며, 특수문자만 XML 엔티티(`&amp;` 등)로 이스케이프된다. `link`와 `pubDate`도 평문이다.
 
 ```xml
-<item><title><![CDATA[트랜잭션과 ACID]]></title><link>https://sgom.github.io/posts/transaction-and-acid/</link><guid isPermaLink="true">https://sgom.github.io/posts/transaction-and-acid/</guid><description><![CDATA[설명]]></description><pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate></item>
+<item><title>트랜잭션과 ACID</title><link>https://sgom.github.io/posts/transaction-and-acid/</link><guid isPermaLink="true">https://sgom.github.io/posts/transaction-and-acid/</guid><description>설명</description><pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate></item>
 ```
+
+파싱은 이 실제 형태를 기준으로 검증하되, CDATA로 감싸인 입력이 들어와도 방어적으로 계속
+처리한다(`extractTag`가 CDATA 유무와 무관하게 엔티티를 디코드한다).
 
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
 
@@ -561,7 +566,15 @@ Expected: 0이 아닌 종료 코드와 ENOENT 오류. 조용히 성공하면 안
 - [ ] **Step 5: 테스트와 빌드가 여전히 통과하는지 확인한다**
 
 Run: `npm test && npm run build`
-Expected: 둘 다 PASS. `scripts/`가 `tsconfig.json`의 `include`(`**/*`)에 들어가므로 타입 오류가 나면 여기서 드러난다.
+Expected: 둘 다 PASS.
+
+`scripts/`가 `tsconfig.json`의 `include`(`**/*`)에 들어가는 것은 사실이지만, 이것으로 타입
+오류가 드러나지는 **않는다.** `npm run build`는 `astro build && pagefind --site dist`이고,
+`astro build`는 자체 컴파일 그래프 밖의 독립 `.ts` 파일을 타입 체크하지 않는다. 이 저장소에는
+`tsc --noEmit`이나 `astro check` 단계가 없고 `vitest`도 타입 체크를 하지 않는다. 즉
+`scripts/update-profile-readme.ts`의 타입 오류는 로컬에서 `npx tsx`로 직접 실행하거나 에디터가
+잡아주지 않는 한 어떤 자동 검증도 걸러내지 못한다. 이는 알려진 한계로 남긴다 — 이 스크립트만을
+위해 타입 체크 단계를 새로 추가하지는 않는다.
 
 - [ ] **Step 6: 커밋한다**
 

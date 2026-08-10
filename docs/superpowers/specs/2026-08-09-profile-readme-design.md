@@ -15,7 +15,7 @@ GitHub 프로필 README(`sGOM/sGom`)에 블로그를 노출한다. 프로필을 
 | 산출물 | 위치 | 관리 주체 |
 |---|---|---|
 | 프로필 README 초안 | scratchpad `profile-README.md` | 사용자가 `sGOM/sGom`에 붙여넣는다 |
-| 순수 함수 3종 + 테스트 | `src/lib/profile-readme.ts`, `.test.ts` | blog repo |
+| 순수 함수 4종 + 테스트 | `src/lib/profile-readme.ts`, `.test.ts` | blog repo |
 | 갱신 스크립트 | `scripts/update-profile-readme.ts` | blog repo |
 | 갱신 job | `.github/workflows/deploy.yml` | blog repo |
 
@@ -102,19 +102,22 @@ fine-grained PAT를 발급해 blog repo의 Actions secret `PROFILE_TOKEN`으로 
 | `parseRssItems(xml, limit)` | RSS 문자열 | `{ title, link, pubDate }[]` |
 | `renderPostList(items)` | 아이템 배열 | 마크다운 목록 문자열 |
 | `replaceMarkedSection(readme, block)` | README 전문, 삽입할 블록 | 치환된 README 전문 |
+| `extractMarkedSection(readme)` | README 전문 | 마커 사이 내용(트림됨) |
 
 RSS 파싱에 외부 라이브러리를 넣지 않는다. 입력이 `@astrojs/rss`가 생성하는 형식으로 고정되어
 있으므로 정규식으로 충분하다. 임의의 XML을 다룰 일이 생기면 그때 바꾼다.
 
-`@astrojs/rss`는 `title`을 CDATA로 감싼다. 파싱은 CDATA와 평문을 모두 처리하고, HTML 엔티티
-(`&amp;` 등)를 디코드한다. 제목에 마크다운 링크 문법을 깨는 문자(`[`, `]`)가 있으면 이스케이프한다.
+실제 배포된 피드(`https://sgom.github.io/rss.xml`)를 확인한 결과 `@astrojs/rss`는 `title`을
+CDATA로 감싸지 않는다. 평문에 특수문자만 XML 엔티티(`&amp;`, `&lt;`, `&gt;`, `&quot;`,
+`&apos;`)로 이스케이프한다. 파싱은 이 실제 형태(엔티티 디코드)를 기준으로 검증하되, CDATA로
+감싸인 입력이 들어와도 방어적으로 계속 처리한다.
 
 ### `src/lib/profile-readme.test.ts`
 
 테스트를 먼저 쓴다. 다루는 경계는 다음과 같다.
 
-- CDATA로 감싼 제목과 평문 제목
-- HTML 엔티티가 들어간 제목
+- 실제 배포된 피드 형태(CDATA 없음, 엔티티 이스케이프)와 CDATA로 감싼 제목 둘 다
+- HTML 엔티티가 들어간 제목 (CDATA 유무 각각)
 - 글이 `limit`보다 적을 때
 - 아이템이 0개일 때 (빈 목록 대신 안내 문구를 낸다)
 - README에 마커가 없을 때 (예외를 던진다)
@@ -140,8 +143,13 @@ fetch, 파일 읽기/쓰기만 한다. Node 22 내장 `fetch`를 쓴다.
 | `sGOM/sGom.github.io` | `blog` | 기본 `GITHUB_TOKEN` |
 | `sGOM/sGom` | `profile` | `PROFILE_TOKEN` |
 
-blog 쪽에서 `npm ci` 후 스크립트를 실행하고, 대상으로 `profile/README.md`를 넘긴다.
-커밋 작성자는 `github-actions[bot]`으로 둔다.
+순서는 blog checkout → Node 설정 → `npm ci` → **profile checkout** → 스크립트 실행 →
+commit/push다. `PROFILE_TOKEN`(쓰기 권한 PAT)은 `profile/.git/config`에 persist되므로, 신뢰할
+수 없는 코드(의존성의 postinstall 등)가 실행되는 `npm ci`보다 뒤에 체크아웃해 디스크에 토큰이
+놓이는 시간을 최소화한다. `job.permissions`는 `contents: read`만 준다 — 이 job은
+`GITHUB_TOKEN`으로 아무것도 쓰지 않고, 프로필 repo 쓰기는 `PROFILE_TOKEN`이 전담한다.
+
+스크립트는 `profile/README.md`를 인자로 받는다. 커밋 작성자는 `github-actions[bot]`으로 둔다.
 
 ## 실패 처리
 
@@ -149,8 +157,12 @@ blog 쪽에서 `npm ci` 후 스크립트를 실행하고, 대상으로 `profile/
 |---|---|
 | RSS fetch 실패 | job 실패. 조용히 넘어가면 갱신이 멈춘 것을 모른다 |
 | README에 마커 없음 | job 실패 |
-| 글이 0개 | 안내 문구를 넣고 정상 종료 |
+| 글이 0개이고 마커 사이가 이미 비어 있거나 안내 문구일 때 | 안내 문구를 넣고(또는 유지하고) 정상 종료. 최초 1회에 해당한다 |
+| 글이 0개인데 마커 사이에 기존 글 목록이 있을 때 | job 실패. RSS가 일시적 이상(배포 직후 전파 지연, `rss.xml.js` 회귀 등)으로 빈 목록을 반환했을 가능성이 있다고 보고, 공개 프로필의 글 목록을 조용히 지우는 대신 갱신을 중단한다 |
 | 내용 변동 없음 | 커밋을 만들지 않는다 |
+
+빈 목록 판단은 `extractMarkedSection(readme)`으로 마커 사이 기존 내용을 읽어, 빈 문자열이거나
+안내 문구와 같은지로 가른다. 이 함수도 `src/lib/profile-readme.ts`의 순수 함수다.
 
 이 job이 실패해도 블로그 배포는 이미 끝난 뒤이므로 사이트에는 영향이 없다.
 

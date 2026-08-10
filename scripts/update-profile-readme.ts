@@ -3,6 +3,8 @@ import {
   parseRssItems,
   renderPostList,
   replaceMarkedSection,
+  extractMarkedSection,
+  EMPTY_MESSAGE,
 } from '../src/lib/profile-readme.js';
 
 const RSS_URL = 'https://sgom.github.io/rss.xml';
@@ -21,6 +23,18 @@ if (!response.ok) {
 
 const items = parseRssItems(await response.text(), POST_LIMIT);
 const readme = await readFile(readmePath, 'utf8');
+
+if (items.length === 0) {
+  const existing = extractMarkedSection(readme);
+  if (existing !== '' && existing !== EMPTY_MESSAGE) {
+    throw new Error(
+      'RSS가 글 0개를 반환했는데 README에는 이미 글 목록이 있다. ' +
+        'RSS 응답이 의심스럽다 (배포 직후 전파 지연, rss.xml 회귀 등) — ' +
+        '프로필을 비우는 대신 갱신을 중단한다.'
+    );
+  }
+}
+
 const updated = replaceMarkedSection(readme, renderPostList(items));
 
 if (updated === readme) {

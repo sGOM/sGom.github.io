@@ -29,3 +29,44 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  update-profile:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout blog
+        uses: actions/checkout@v7
+        with:
+          path: blog
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: blog/package-lock.json
+      - name: Install dependencies
+        working-directory: blog
+        run: npm ci
+      - name: Checkout profile
+        uses: actions/checkout@v7
+        with:
+          repository: sGOM/sGom
+          path: profile
+          token: ${{ secrets.PROFILE_TOKEN }}
+      - name: Update profile README
+        working-directory: blog
+        run: npx tsx scripts/update-profile-readme.ts ../profile/README.md
+      - name: Commit and push
+        working-directory: profile
+        run: |
+          if git diff --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "chore: 최신 글 목록 갱신"
+          git push

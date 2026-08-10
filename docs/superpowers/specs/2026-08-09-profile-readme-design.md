@@ -1,0 +1,181 @@
+# GitHub 프로필 README 설계
+
+작성일: 2026-08-09
+
+## 목적
+
+GitHub 프로필 README(`sGOM/sGom`)에 블로그를 노출한다. 프로필을 연 사람이 블로그의 존재와
+최근에 무엇을 쓰고 있는지를 스크롤 없이 파악하게 만드는 것이 목표다.
+
+최신 글 목록은 손으로 관리하지 않는다. 글을 쓸 때마다 두 곳을 고쳐야 하면 결국 한쪽이 낡는다.
+블로그를 배포하면 프로필도 따라 갱신되도록 자동화한다.
+
+## 산출물
+
+| 산출물 | 위치 | 관리 주체 |
+|---|---|---|
+| 프로필 README 초안 | scratchpad `profile-README.md` | 사용자가 `sGOM/sGom`에 붙여넣는다 |
+| 순수 함수 4종 + 테스트 | `src/lib/profile-readme.ts`, `.test.ts` | blog repo |
+| 갱신 스크립트 | `scripts/update-profile-readme.ts` | blog repo |
+| 갱신 job | `.github/workflows/deploy.yml` | blog repo |
+
+프로필 repo는 로컬에 클론하지 않는다. README는 초안 파일로 전달하고, 이후 갱신은 워크플로가
+원격에서 직접 수행한다.
+
+## README 구조
+
+```
+<div align="center">
+  <h1>Heo SeokJin</h1>
+  [Blog 배지] [Email 배지]
+</div>
+
+## 📚 STACK
+(기존 배지 3줄 유지)
+
+## ✍️ 최신 글
+<!-- BLOG-POST-LIST:START -->
+- [제목](https://sgom.github.io/posts/<슬러그>/) · 2026-08-09
+  ... 최대 5개
+<!-- BLOG-POST-LIST:END -->
+→ 글 전체 보기
+
+## 📊 GitHub
+[프로필 요약 카드]
+[언어 분포 카드] [주 사용 언어 카드]
+```
+
+### 결정 사항
+
+- **자기소개 문구를 넣지 않는다.** 이름 헤더와 배지만 둔다. 문구는 낡기 쉽고 관리 대상이 늘어난다.
+- **배지 스타일은 `for-the-badge`로 통일한다.** 기존 STACK 배지와 시각적으로 어긋나지 않게 한다.
+  - Blog → `https://sgom.github.io`
+  - Email → `pooh6195@naver.com`
+- **기존 STACK 배지는 그대로 유지한다.** 손댈 이유가 없다.
+- **통계 카드는 `github-profile-summary-cards` 3장**(profile-details, repos-per-language,
+  most-commit-language)을 쓴다. 테마는 `github_dark` 고정이다.
+
+  처음에는 `github-readme-stats`를 골랐으나 공개 인스턴스가 `DEPLOYMENT_PAUSED` 상태라
+  모든 카드가 503을 반환했다. 일시적 rate limit이 아니라 배포 자체가 멈춘 것이라 복구 시점을
+  알 수 없어 교체했다. 자체 Vercel 배포는 계정과 배포 관리 부담 때문에 택하지 않았다.
+
+  교체한 서비스도 같은 종류의 위험을 지닌다. 여기서 감수하는 것은 "이미지가 깨질 수 있다"이지
+  "깨진 채 방치한다"가 아니다. 카드가 깨지면 다시 교체하거나 섹션을 지운다.
+
+## 자동 갱신
+
+### 흐름
+
+기존 배포 워크플로에 job 하나를 잇는다.
+
+```
+build → deploy → update-profile
+```
+
+`update-profile`이 하는 일은 다음과 같다.
+
+1. `https://sgom.github.io/rss.xml`을 fetch한다. `deploy` 이후이므로 최신 상태다.
+2. 최신 5개의 `title`, `link`, `pubDate`를 뽑는다.
+3. `actions/checkout`으로 `sGOM/sGom`을 `PROFILE_TOKEN`으로 체크아웃한다.
+4. README의 `BLOG-POST-LIST` 마커 사이를 치환한다.
+5. 변경이 있을 때만 커밋하고 push한다.
+
+### 대안 검토
+
+| 안 | 내용 | 판단 |
+|---|---|---|
+| A | 프로필 repo에 cron 워크플로 | 즉시성이 없다. 글을 써도 최대 하루 뒤에 반영된다 |
+| B | 외부 액션(`blog-post-workflow`) | 출력 형식 통제가 제한적이고 제3자 액션을 신뢰해야 한다 |
+| C | 블로그 배포 시 push | **채택.** 배포 즉시 반영되고 출력 형식을 완전히 통제한다 |
+
+C의 비용은 cross-repo push용 PAT 발급과 관리다. 갱신 지연이 없다는 이점이 이를 상회한다고 봤다.
+
+### 필요한 준비물
+
+fine-grained PAT를 발급해 blog repo의 Actions secret `PROFILE_TOKEN`으로 등록한다.
+
+- Repository access: `sGOM/sGom`만 선택
+- Permissions: Contents → Read and write
+
+이 발급은 사용자가 직접 해야 한다. 구현 시 절차를 안내한다.
+
+## 코드 구조
+
+`src/lib/`의 기존 규칙을 따른다. 로직은 순수 함수로 두고 IO는 스크립트가 담당한다.
+
+### `src/lib/profile-readme.ts`
+
+| 함수 | 입력 | 출력 |
+|---|---|---|
+| `parseRssItems(xml, limit)` | RSS 문자열 | `{ title, link, pubDate }[]` |
+| `renderPostList(items)` | 아이템 배열 | 마크다운 목록 문자열 |
+| `replaceMarkedSection(readme, block)` | README 전문, 삽입할 블록 | 치환된 README 전문 |
+| `extractMarkedSection(readme)` | README 전문 | 마커 사이 내용(트림됨) |
+
+RSS 파싱에 외부 라이브러리를 넣지 않는다. 입력이 `@astrojs/rss`가 생성하는 형식으로 고정되어
+있으므로 정규식으로 충분하다. 임의의 XML을 다룰 일이 생기면 그때 바꾼다.
+
+실제 배포된 피드(`https://sgom.github.io/rss.xml`)를 확인한 결과 `@astrojs/rss`는 `title`을
+CDATA로 감싸지 않는다. 평문에 특수문자만 XML 엔티티(`&amp;`, `&lt;`, `&gt;`, `&quot;`,
+`&apos;`)로 이스케이프한다. 파싱은 이 실제 형태(엔티티 디코드)를 기준으로 검증하되, CDATA로
+감싸인 입력이 들어와도 방어적으로 계속 처리한다.
+
+### `src/lib/profile-readme.test.ts`
+
+테스트를 먼저 쓴다. 다루는 경계는 다음과 같다.
+
+- 실제 배포된 피드 형태(CDATA 없음, 엔티티 이스케이프)와 CDATA로 감싼 제목 둘 다
+- HTML 엔티티가 들어간 제목 (CDATA 유무 각각)
+- 글이 `limit`보다 적을 때
+- 아이템이 0개일 때 (빈 목록 대신 안내 문구를 낸다)
+- README에 마커가 없을 때 (예외를 던진다)
+- 마커 사이에 기존 내용이 있을 때와 비어 있을 때
+
+### `scripts/update-profile-readme.ts`
+
+fetch, 파일 읽기/쓰기만 한다. Node 22 내장 `fetch`를 쓴다.
+
+`src/lib/`의 순수 함수는 `.ts`로 두므로 스크립트도 `.ts`로 통일하고, 실행은 `tsx`로 한다.
+`tsx`를 devDependency에 추가하고 워크플로에서 `npx tsx scripts/update-profile-readme.ts`로
+호출한다. Node의 실험적 타입 스트리핑 플래그에 의존하지 않고, 순수 함수를 `.js`로 내리지도
+않는다. 의존성 하나를 더 받는 대신 기존 파일 규칙과 Vitest 테스트를 그대로 유지한다.
+
+인자는 갱신할 README 경로 하나를 받는다. 워크플로가 체크아웃한 프로필 repo의 경로를 넘긴다.
+
+### 워크플로 job
+
+`update-profile`은 checkout을 두 번 한다.
+
+| 대상 | 경로 | 토큰 |
+|---|---|---|
+| `sGOM/sGom.github.io` | `blog` | 기본 `GITHUB_TOKEN` |
+| `sGOM/sGom` | `profile` | `PROFILE_TOKEN` |
+
+순서는 blog checkout → Node 설정 → `npm ci` → **profile checkout** → 스크립트 실행 →
+commit/push다. `PROFILE_TOKEN`(쓰기 권한 PAT)은 `profile/.git/config`에 persist되므로, 신뢰할
+수 없는 코드(의존성의 postinstall 등)가 실행되는 `npm ci`보다 뒤에 체크아웃해 디스크에 토큰이
+놓이는 시간을 최소화한다. `job.permissions`는 `contents: read`만 준다 — 이 job은
+`GITHUB_TOKEN`으로 아무것도 쓰지 않고, 프로필 repo 쓰기는 `PROFILE_TOKEN`이 전담한다.
+
+스크립트는 `profile/README.md`를 인자로 받는다. 커밋 작성자는 `github-actions[bot]`으로 둔다.
+
+## 실패 처리
+
+| 상황 | 동작 |
+|---|---|
+| RSS fetch 실패 | job 실패. 조용히 넘어가면 갱신이 멈춘 것을 모른다 |
+| README에 마커 없음 | job 실패 |
+| 글이 0개이고 마커 사이가 이미 비어 있거나 안내 문구일 때 | 안내 문구를 넣고(또는 유지하고) 정상 종료. 최초 1회에 해당한다 |
+| 글이 0개인데 마커 사이에 기존 글 목록이 있을 때 | job 실패. RSS가 일시적 이상(배포 직후 전파 지연, `rss.xml.js` 회귀 등)으로 빈 목록을 반환했을 가능성이 있다고 보고, 공개 프로필의 글 목록을 조용히 지우는 대신 갱신을 중단한다 |
+| 내용 변동 없음 | 커밋을 만들지 않는다 |
+
+빈 목록 판단은 `extractMarkedSection(readme)`으로 마커 사이 기존 내용을 읽어, 빈 문자열이거나
+안내 문구와 같은지로 가른다. 이 함수도 `src/lib/profile-readme.ts`의 순수 함수다.
+
+이 job이 실패해도 블로그 배포는 이미 끝난 뒤이므로 사이트에는 영향이 없다.
+
+## 범위 밖
+
+- 프로필 repo를 로컬에 클론해 관리하는 것
+- 방문자 수 카운터, 트로피, 스네이크 애니메이션 등 추가 위젯
+- 다크/라이트 테마에 따라 통계 카드 이미지를 전환하는 처리

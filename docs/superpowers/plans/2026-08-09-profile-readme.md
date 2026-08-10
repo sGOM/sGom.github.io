@@ -104,8 +104,10 @@ scratchpad 디렉터리에 `profile-README.md`로 아래 내용을 그대로 쓴
 
 <div align="center">
 
-![Stats](https://github-readme-stats.vercel.app/api?username=sGOM&show_icons=true&hide_border=true&theme=github_dark&hide_title=true&include_all_commits=true)
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=sGOM&layout=compact&hide_border=true&theme=github_dark&langs_count=6)
+![Profile](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=sGOM&theme=github_dark)
+
+![Repos per Language](https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=sGOM&theme=github_dark)
+![Most Commit Language](https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=sGOM&theme=github_dark)
 
 </div>
 ```

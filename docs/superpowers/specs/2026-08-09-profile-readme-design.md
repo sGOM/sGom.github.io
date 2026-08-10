@@ -41,7 +41,8 @@ GitHub 프로필 README(`sGOM/sGom`)에 블로그를 노출한다. 프로필을 
 → 글 전체 보기
 
 ## 📊 GitHub
-[stats 카드] [top langs 카드]
+[프로필 요약 카드]
+[언어 분포 카드] [주 사용 언어 카드]
 ```
 
 ### 결정 사항
@@ -51,8 +52,15 @@ GitHub 프로필 README(`sGOM/sGom`)에 블로그를 노출한다. 프로필을 
   - Blog → `https://sgom.github.io`
   - Email → `pooh6195@naver.com`
 - **기존 STACK 배지는 그대로 유지한다.** 손댈 이유가 없다.
-- **통계 카드는 `github-readme-stats` 2장**(stats, top-langs)만 쓴다. 테마는 고정값으로 둔다.
-  외부 서비스이므로 가동률에 의존하는 것을 감수한다. 실패해도 이미지 하나가 깨질 뿐이다.
+- **통계 카드는 `github-profile-summary-cards` 3장**(profile-details, repos-per-language,
+  most-commit-language)을 쓴다. 테마는 `github_dark` 고정이다.
+
+  처음에는 `github-readme-stats`를 골랐으나 공개 인스턴스가 `DEPLOYMENT_PAUSED` 상태라
+  모든 카드가 503을 반환했다. 일시적 rate limit이 아니라 배포 자체가 멈춘 것이라 복구 시점을
+  알 수 없어 교체했다. 자체 Vercel 배포는 계정과 배포 관리 부담 때문에 택하지 않았다.
+
+  교체한 서비스도 같은 종류의 위험을 지닌다. 여기서 감수하는 것은 "이미지가 깨질 수 있다"이지
+  "깨진 채 방치한다"가 아니다. 카드가 깨지면 다시 교체하거나 섹션을 지운다.
 
 ## 자동 갱신
 

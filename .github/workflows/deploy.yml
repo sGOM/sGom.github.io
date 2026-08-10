@@ -33,17 +33,13 @@ jobs:
   update-profile:
     needs: deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout blog
         uses: actions/checkout@v7
         with:
           path: blog
-      - name: Checkout profile
-        uses: actions/checkout@v7
-        with:
-          repository: sGOM/sGom
-          path: profile
-          token: ${{ secrets.PROFILE_TOKEN }}
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
@@ -53,6 +49,12 @@ jobs:
       - name: Install dependencies
         working-directory: blog
         run: npm ci
+      - name: Checkout profile
+        uses: actions/checkout@v7
+        with:
+          repository: sGOM/sGom
+          path: profile
+          token: ${{ secrets.PROFILE_TOKEN }}
       - name: Update profile README
         working-directory: blog
         run: npx tsx scripts/update-profile-readme.ts ../profile/README.md

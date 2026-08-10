@@ -3,8 +3,10 @@ import {
   parseRssItems,
   renderPostList,
   replaceMarkedSection,
+  extractMarkedSection,
   LIST_START,
   LIST_END,
+  EMPTY_MESSAGE,
   type RssItem,
 } from './profile-readme';
 
@@ -80,6 +82,42 @@ describe('parseRssItems', () => {
     const xml = feed([broken, item('정상', 'ok', 'Wed, 05 Aug 2026 00:00:00 GMT')]);
 
     expect(parseRssItems(xml, 5).map((i) => i.title)).toEqual(['정상']);
+  });
+
+  it('실제 배포된 피드 형태(CDATA 없이 평문, 엔티티만 이스케이프)를 그대로 파싱한다', () => {
+    // https://sgom.github.io/rss.xml 에서 직접 확인한 실제 형태. @astrojs/rss는
+    // title을 CDATA로 감싸지 않는다.
+    const xml =
+      `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>` +
+      `<title>sGOM</title><description>개발하며 겪은 문제와 공부한 개념을 남깁니다</description>` +
+      `<link>https://sgom.github.io/</link><language>ko</language>` +
+      `<item><title>격리 수준과 세 가지 이상 현상</title>` +
+      `<link>https://sgom.github.io/posts/isolation-levels-and-anomalies/</link>` +
+      `<guid isPermaLink="true">https://sgom.github.io/posts/isolation-levels-and-anomalies/</guid>` +
+      `<description>SQL 표준이 정의한 4단계 격리 수준과 각 단계가 허용하는 이상 현상을 정리한다</description>` +
+      `<pubDate>Sun, 09 Aug 2026 00:00:00 GMT</pubDate></item>` +
+      `</channel></rss>`;
+
+    const result = parseRssItems(xml, 5);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe('격리 수준과 세 가지 이상 현상');
+    expect(result[0].link).toBe(
+      'https://sgom.github.io/posts/isolation-levels-and-anomalies/'
+    );
+    expect(result[0].pubDate.toISOString().slice(0, 10)).toBe('2026-08-09');
+  });
+
+  it('CDATA 없이 엔티티만 이스케이프된 실제 형태의 제목을 디코드한다', () => {
+    const xml = feed([
+      item(
+        'A &amp;amp; B &amp;lt;tag&amp;gt;',
+        'ent-real',
+        'Wed, 05 Aug 2026 00:00:00 GMT'
+      ),
+    ]);
+
+    expect(parseRssItems(xml, 5)[0].title).toBe('A &amp; B &lt;tag&gt;');
   });
 });
 
@@ -159,6 +197,49 @@ describe('replaceMarkedSection', () => {
   it('마커 순서가 뒤집혀 있으면 예외를 던진다', () => {
     expect(() =>
       replaceMarkedSection(`${LIST_END}\n${LIST_START}`, '- 글')
+    ).toThrow(/마커/);
+  });
+});
+
+describe('extractMarkedSection', () => {
+  const readme = (inner: string) =>
+    `# 제목\n\n## 최신 글\n\n${LIST_START}\n${inner}\n${LIST_END}\n\n## 그 다음\n`;
+
+  it('마커 사이 내용을 트림해 반환한다', () => {
+    expect(extractMarkedSection(readme('- 기존 글'))).toBe('- 기존 글');
+  });
+
+  it('마커 사이가 비어 있으면 빈 문자열을 반환한다', () => {
+    const source = `${LIST_START}\n${LIST_END}`;
+
+    expect(extractMarkedSection(source)).toBe('');
+  });
+
+  it('마커 사이에 공백만 있어도 빈 문자열을 반환한다', () => {
+    const source = `${LIST_START}\n   \n${LIST_END}`;
+
+    expect(extractMarkedSection(source)).toBe('');
+  });
+
+  it('EMPTY_MESSAGE가 들어있으면 그대로 반환한다', () => {
+    const source = `${LIST_START}\n${EMPTY_MESSAGE}\n${LIST_END}`;
+
+    expect(extractMarkedSection(source)).toBe(EMPTY_MESSAGE);
+  });
+
+  it('시작 마커가 없으면 예외를 던진다', () => {
+    expect(() => extractMarkedSection(`# 제목\n${LIST_END}`)).toThrow(/마커/);
+  });
+
+  it('끝 마커가 없으면 예외를 던진다', () => {
+    expect(() => extractMarkedSection(`# 제목\n${LIST_START}`)).toThrow(
+      /마커/
+    );
+  });
+
+  it('마커 순서가 뒤집혀 있으면 예외를 던진다', () => {
+    expect(() =>
+      extractMarkedSection(`${LIST_END}\n${LIST_START}`)
     ).toThrow(/마커/);
   });
 });

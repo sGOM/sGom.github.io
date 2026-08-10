@@ -50,7 +50,7 @@ export function parseRssItems(xml: string, limit: number): RssItem[] {
 export const LIST_START = '<!-- BLOG-POST-LIST:START -->';
 export const LIST_END = '<!-- BLOG-POST-LIST:END -->';
 
-const EMPTY_MESSAGE = '_아직 발행한 글이 없다._';
+export const EMPTY_MESSAGE = '_아직 발행한 글이 없다._';
 
 function escapeLinkText(title: string): string {
   return title.replace(/([[\]])/g, '\\$1');
@@ -87,4 +87,16 @@ export function replaceMarkedSection(readme: string, block: string): string {
     '\n' +
     readme.slice(end)
   );
+}
+
+export function extractMarkedSection(readme: string): string {
+  const start = readme.indexOf(LIST_START);
+  const end = readme.indexOf(LIST_END);
+  if (start === -1 || end === -1 || end < start) {
+    throw new Error(
+      `README에서 ${LIST_START} / ${LIST_END} 마커를 찾지 못했다`
+    );
+  }
+
+  return readme.slice(start + LIST_START.length, end).trim();
 }

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" font-family="-apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif">
+  <rect x="10" y="10" width="840" height="500" rx="16" fill="#f6f8fa" stroke="#e5e5e5" />
+  <text x="430" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">GC 힙 레이아웃 — 연속 공간 모델 vs 리전 기반 모델</text>
+
+  <!-- Left: contiguous model -->
+  <rect x="40" y="60" width="370" height="380" rx="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5" />
+  <text x="225" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">연속 공간 모델</text>
+  <text x="225" y="106" text-anchor="middle" font-size="10" fill="#6b6b6b">(Serial · Parallel · CMS)</text>
+  <text x="225" y="126" text-anchor="middle" font-size="10.5" fill="#6b6b6b">Young</text>
+
+  <rect x="60" y="134" width="330" height="90" rx="6" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="225" y="184" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">Eden</text>
+
+  <rect x="60" y="234" width="162" height="60" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" />
+  <text x="141" y="270" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">S0</text>
+
+  <rect x="228" y="234" width="162" height="60" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" />
+  <text x="309" y="270" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">S1</text>
+
+  <text x="225" y="308" text-anchor="middle" font-size="10.5" fill="#6b6b6b">Old</text>
+  <rect x="60" y="316" width="330" height="110" rx="6" fill="#e5e5e7" stroke="#6b6b6b" stroke-width="1.5" />
+  <text x="225" y="376" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">Old</text>
+
+  <!-- Right: region-based model -->
+  <rect x="450" y="60" width="370" height="380" rx="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5" />
+  <text x="635" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">리전 기반 모델</text>
+  <text x="635" y="106" text-anchor="middle" font-size="10" fill="#6b6b6b">(G1)</text>
+
+  <!-- 6x6 region grid, cell 47 gap 6, origin (479,124) -->
+  <!-- row0: E E E S O O -->
+  <rect x="479" y="124" width="47" height="47" rx="4" fill="#eef2ff" stroke="#2563eb" /><text x="502.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">E</text>
+  <rect x="532" y="124" width="47" height="47" rx="4" fill="#eef2ff" stroke="#2563eb" /><text x="555.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">E</text>
+  <rect x="585" y="124" width="47" height="47" rx="4" fill="#eef2ff" stroke="#2563eb" /><text x="608.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">E</text>
+  <rect x="638" y="124" width="47" height="47" rx="4" fill="#dbeafe" stroke="#2563eb" /><text x="661.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">S</text>
+  <rect x="691" y="124" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="714.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="744" y="124" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="767.5" y="153" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+
+  <!-- row1: E E S O O O -->
+  <rect x="479" y="177" width="47" height="47" rx="4" fill="#eef2ff" stroke="#2563eb" /><text x="502.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">E</text>
+  <rect x="532" y="177" width="47" height="47" rx="4" fill="#eef2ff" stroke="#2563eb" /><text x="555.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">E</text>
+  <rect x="585" y="177" width="47" height="47" rx="4" fill="#dbeafe" stroke="#2563eb" /><text x="608.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">S</text>
+  <rect x="638" y="177" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="661.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="691" y="177" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="714.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="744" y="177" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="767.5" y="206" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+
+  <!-- row2: S O O O O O -->
+  <rect x="479" y="230" width="47" height="47" rx="4" fill="#dbeafe" stroke="#2563eb" /><text x="502.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">S</text>
+  <rect x="532" y="230" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="555.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="585" y="230" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="608.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="638" y="230" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="661.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="691" y="230" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="714.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="744" y="230" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="767.5" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+
+  <!-- row3: O O O O O O -->
+  <rect x="479" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="502.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="532" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="555.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="585" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="608.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="638" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="661.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="691" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="714.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="744" y="283" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="767.5" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+
+  <!-- row4: O O O O O F -->
+  <rect x="479" y="336" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="502.5" y="365" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="532" y="336" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="555.5" y="365" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="585" y="336" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="608.5" y="365" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="638" y="336" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="661.5" y="365" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="691" y="336" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="714.5" y="365" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="744" y="336" width="47" height="47" rx="4" fill="#ffffff" stroke="#6b6b6b" stroke-dasharray="3 3" />
+
+  <!-- row5: O O O F F F -->
+  <rect x="479" y="389" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="502.5" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="532" y="389" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="555.5" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="585" y="389" width="47" height="47" rx="4" fill="#e5e5e7" stroke="#6b6b6b" /><text x="608.5" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">O</text>
+  <rect x="638" y="389" width="47" height="47" rx="4" fill="#ffffff" stroke="#6b6b6b" stroke-dasharray="3 3" />
+  <rect x="691" y="389" width="47" height="47" rx="4" fill="#ffffff" stroke="#6b6b6b" stroke-dasharray="3 3" />
+  <rect x="744" y="389" width="47" height="47" rx="4" fill="#ffffff" stroke="#6b6b6b" stroke-dasharray="3 3" />
+
+  <!-- legend -->
+  <rect x="70" y="463" width="14" height="14" rx="3" fill="#eef2ff" stroke="#2563eb" />
+  <text x="90" y="474" font-size="11" fill="#1a1a1a">Eden — 신규 객체</text>
+
+  <rect x="280" y="463" width="14" height="14" rx="3" fill="#dbeafe" stroke="#2563eb" />
+  <text x="300" y="474" font-size="11" fill="#1a1a1a">Survivor — 생존자</text>
+
+  <rect x="520" y="463" width="14" height="14" rx="3" fill="#e5e5e7" stroke="#6b6b6b" />
+  <text x="540" y="474" font-size="11" fill="#1a1a1a">Old — 승격된 객체</text>
+
+  <rect x="740" y="463" width="14" height="14" rx="3" fill="#ffffff" stroke="#6b6b6b" stroke-dasharray="3 3" />
+  <text x="760" y="474" font-size="11" fill="#1a1a1a">Free — 미사용</text>
+
+  <text x="430" y="497" text-anchor="middle" font-size="10" fill="#6b6b6b">리전 크기는 힙 크기에 따라 1~32MB 사이에서 정해진다 (기본 목표 약 2048개)</text>
+</svg>

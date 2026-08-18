@@ -2,7 +2,7 @@
 
 개발하며 겪은 문제와 공부한 개념을 남기는 블로그. Astro로 만들어 GitHub Pages(`sgom.github.io`)에 배포한다.
 
-설계 배경: `docs/superpowers/specs/2026-08-05-blog-design.md`
+설계 배경: `docs/superpowers/specs/`의 설계 문서들. 최초 설계는 `2026-08-05-blog-design.md`, 이후 변경 사항은 같은 디렉터리의 날짜별 문서를 참고한다.
 
 ## 글을 쓸 때
 
@@ -17,6 +17,14 @@
 - **실제로 겪은 문제 상황의 파악과 해결 과정** → `templates/troubleshooting.md`
 
 애매하면 물어본다. 임의로 정하지 않는다.
+
+템플릿과 3절의 그룹 태그는 1:1로 대응한다. 템플릿을 고르면 그룹 태그도 같이 정해진다.
+
+| 템플릿 | 그룹 태그 |
+|---|---|
+| `templates/basics.md` | `기본개념` |
+| `templates/deep-dive.md` | `파고들기` |
+| `templates/troubleshooting.md` | `오답노트` |
 
 세 템플릿 모두 섹션이 필수와 선택으로 나뉘어 있다. 선택 섹션은 해당 없으면 지운다.
 
@@ -73,6 +81,7 @@ grep -h "^tags:" src/content/posts/*/index.md | grep -o "기본개념\|파고들
 - **결론을 뒤로 미루지 않는다.** 문단 첫 문장에 요지를 놓는다.
 - **추측과 사실을 표기로 구분한다.** (`~로 보인다` vs `~였다`)
 - **1인칭은 생략한다.** 평서체에서 "저"는 어울리지 않는다.
+- **바로 이해하기 어려운 용어나 공식문서 인용구는 출처 링크를 첨부한다.** 해당 개념을 설명하는 공식문서나 위키 링크를 붙인다.
 
 이 규칙은 글 본문에만 적용한다. 코드 주석과 UI 문구에는 적용하지 않는다.
 
@@ -91,6 +100,8 @@ npm run build   # 스키마 검증 + 검색 인덱스
 1. `src/content/posts/_drafts/<슬러그>/index.md`에 원고를 쓴다. frontmatter에 `draft: true`를 넣는다.
    초안도 스키마 검증 대상이므로 그룹 태그를 처음부터 넣어야 `npm run build`가 통과한다.
 2. `npm run dev`를 띄우고 사용자에게 주소를 알린다. 개발 서버는 초안을 렌더하지만 `npm run build`는 제외한다.
+   초안의 URL은 `/posts/<슬러그>/`가 아니라 `/posts/_drafts/<슬러그>/`다. `content.config.ts`의 `generateId`가
+   `/index.md`만 잘라내고 `_drafts/` 접두사는 그대로 남기기 때문이다. `/posts/<슬러그>/`는 발행 후 URL이다.
 3. 사용자가 읽고 판단한다. **여기서 멈춘다.**
 4. 승인되면 디렉터리를 옮기고 `draft: true`를 지운 뒤, 위 3개 명령을 돌리고 커밋한다.
 

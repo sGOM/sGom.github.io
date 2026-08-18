@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 340" font-family="-apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+
+  <rect x="10" y="10" width="840" height="320" rx="16" fill="#f6f8fa" stroke="#e5e5e5" />
+
+  <text x="430" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">클래스 로딩 3단계</text>
+
+  <!-- Row 1: main flow -->
+  <line x1="270" y1="120" x2="316" y2="120" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="520" y1="120" x2="566" y2="120" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <rect x="110" y="70" width="160" height="100" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="190" y="106" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">로딩</text>
+  <text x="190" y="124" text-anchor="middle" font-size="12" fill="#6b6b6b">(Loading)</text>
+  <text x="190" y="148" text-anchor="middle" font-size="11" fill="#1a1a1a">.class 파일 →</text>
+  <text x="190" y="162" text-anchor="middle" font-size="11" fill="#1a1a1a">메서드 영역 적재</text>
+
+  <rect x="320" y="70" width="200" height="100" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="420" y="106" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">링킹</text>
+  <text x="420" y="124" text-anchor="middle" font-size="12" fill="#6b6b6b">(Linking)</text>
+  <text x="420" y="148" text-anchor="middle" font-size="11" fill="#1a1a1a">검증 · 준비 · 결정</text>
+  <text x="420" y="162" text-anchor="middle" font-size="11" fill="#1a1a1a">순서로 진행</text>
+
+  <rect x="570" y="70" width="180" height="100" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="660" y="106" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">초기화</text>
+  <text x="660" y="124" text-anchor="middle" font-size="12" fill="#6b6b6b">(Initialization)</text>
+  <text x="660" y="148" text-anchor="middle" font-size="11" fill="#1a1a1a">static 블록 실행 ·</text>
+  <text x="660" y="162" text-anchor="middle" font-size="11" fill="#1a1a1a">static 변수 값 대입</text>
+
+  <!-- connector from Linking down to its sub-steps -->
+  <line x1="420" y1="170" x2="420" y2="221" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="175" y1="225" x2="665" y2="225" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 4" />
+
+  <!-- Row 2: Linking sub-steps -->
+  <line x1="325" y1="270" x2="341" y2="270" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+  <line x1="495" y1="270" x2="511" y2="270" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <rect x="175" y="230" width="150" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="250" y="256" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">검증</text>
+  <text x="250" y="272" text-anchor="middle" font-size="10.5" fill="#6b6b6b">(Verification)</text>
+  <text x="250" y="292" text-anchor="middle" font-size="10.5" fill="#1a1a1a">바이트코드가 명세를</text>
+  <text x="250" y="304" text-anchor="middle" font-size="10.5" fill="#1a1a1a">지키는지 검사</text>
+
+  <rect x="345" y="230" width="150" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="420" y="256" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">준비</text>
+  <text x="420" y="272" text-anchor="middle" font-size="10.5" fill="#6b6b6b">(Preparation)</text>
+  <text x="420" y="292" text-anchor="middle" font-size="10.5" fill="#1a1a1a">static 변수에</text>
+  <text x="420" y="304" text-anchor="middle" font-size="10.5" fill="#1a1a1a">기본값 할당</text>
+
+  <rect x="515" y="230" width="150" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="590" y="256" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">결정</text>
+  <text x="590" y="272" text-anchor="middle" font-size="10.5" fill="#6b6b6b">(Resolution)</text>
+  <text x="590" y="292" text-anchor="middle" font-size="10.5" fill="#1a1a1a">심볼릭 레퍼런스를</text>
+  <text x="590" y="304" text-anchor="middle" font-size="10.5" fill="#1a1a1a">실제 주소로 변환</text>
+</svg>

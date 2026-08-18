@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 620" font-family="-apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#1a1a1a" />
+    </marker>
+  </defs>
+
+  <rect x="10" y="10" width="840" height="600" rx="16" fill="#f6f8fa" stroke="#e5e5e5" />
+  <text x="430" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">JVM 전체 구조</text>
+
+  <!-- Class Loader Subsystem -->
+  <rect x="180" y="54" width="500" height="80" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="430" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">클래스 로더 서브시스템</text>
+  <text x="430" y="102" text-anchor="middle" font-size="11" fill="#6b6b6b">(Class Loader Subsystem)</text>
+  <text x="430" y="122" text-anchor="middle" font-size="11" fill="#1a1a1a">.class 파일 로딩 · 링킹 · 초기화</text>
+
+  <line x1="430" y1="134" x2="430" y2="178" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <!-- Runtime Data Area -->
+  <rect x="180" y="180" width="500" height="80" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="430" y="212" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">런타임 데이터 영역</text>
+  <text x="430" y="228" text-anchor="middle" font-size="11" fill="#6b6b6b">(Runtime Data Area)</text>
+  <text x="430" y="248" text-anchor="middle" font-size="10" fill="#1a1a1a">메서드 영역 · 힙 · 스택 · PC 레지스터 · 네이티브 메서드 스택</text>
+
+  <line x1="430" y1="260" x2="430" y2="304" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <!-- Execution Engine -->
+  <rect x="180" y="306" width="500" height="140" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="430" y="328" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">실행 엔진 (Execution Engine)</text>
+
+  <rect x="200" y="350" width="140" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="270" y="376" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">인터프리터</text>
+  <text x="270" y="392" text-anchor="middle" font-size="9.5" fill="#6b6b6b">(Interpreter)</text>
+  <text x="270" y="412" text-anchor="middle" font-size="9.5" fill="#1a1a1a">한 줄씩 해석 실행</text>
+
+  <rect x="360" y="350" width="140" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="430" y="376" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">JIT 컴파일러</text>
+  <text x="430" y="392" text-anchor="middle" font-size="9.5" fill="#6b6b6b">(JIT Compiler)</text>
+  <text x="430" y="412" text-anchor="middle" font-size="9.5" fill="#1a1a1a">네이티브 코드로 컴파일</text>
+
+  <rect x="520" y="350" width="140" height="80" rx="8" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="590" y="376" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">가비지 컬렉터</text>
+  <text x="590" y="392" text-anchor="middle" font-size="9.5" fill="#6b6b6b">(GC)</text>
+  <text x="590" y="412" text-anchor="middle" font-size="9.5" fill="#1a1a1a">쓰지 않는 객체 회수</text>
+
+  <line x1="320" y1="446" x2="320" y2="470" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <!-- JNI -->
+  <rect x="210" y="474" width="220" height="90" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="320" y="506" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a1a">JNI</text>
+  <text x="320" y="522" text-anchor="middle" font-size="11" fill="#6b6b6b">(Java Native Interface)</text>
+  <text x="320" y="542" text-anchor="middle" font-size="10.5" fill="#1a1a1a">자바 ↔ 네이티브 코드 호출 다리</text>
+
+  <line x1="430" y1="519" x2="486" y2="519" stroke="#1a1a1a" stroke-width="2" marker-end="url(#arrowhead)" />
+
+  <!-- Native Method Libraries -->
+  <rect x="490" y="474" width="280" height="90" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+  <text x="630" y="504" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">네이티브 메서드 라이브러리</text>
+  <text x="630" y="520" text-anchor="middle" font-size="10.5" fill="#6b6b6b">(Native Method Libraries)</text>
+  <text x="630" y="540" text-anchor="middle" font-size="10.5" fill="#1a1a1a">.dll / .so 등 OS 네이티브 코드</text>
+
+  <text x="430" y="592" text-anchor="middle" font-size="10" fill="#6b6b6b">화살표: 실행 흐름 · JNI가 실행 엔진과 네이티브 라이브러리를 연결한다</text>
+</svg>

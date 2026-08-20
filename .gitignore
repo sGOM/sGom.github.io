@@ -31,3 +31,6 @@ pnpm-debug.log*
 
 # 검수 전 원고. 승인되면 src/content/posts/ 로 옮긴다.
 src/content/posts/_drafts/
+
+# 글감 백로그. 개인 메모라 저장소에 넣지 않는다.
+docs/post-backlog.md

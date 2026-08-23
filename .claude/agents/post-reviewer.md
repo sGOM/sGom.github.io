@@ -21,7 +21,7 @@ model: opus
 경로를 받지 못했으면 `src/content/posts/_drafts/*/index.md`를 Glob으로 찾는다.
 
 프로젝트 루트의 `CLAUDE.md`와 해당 템플릿(`templates/basics.md`, `templates/deep-dive.md`,
-`templates/troubleshooting.md`) 중 그룹 태그에 대응하는 것을 먼저 읽는다. 규칙의 원본은 그쪽이고
+`templates/troubleshooting.md`) 중 그룹 태그에 대응하는 것, 그리고 `docs/writing-style.md`를 먼저 읽는다. 규칙의 원본은 그쪽이고
 이 파일은 요약이다. 둘이 어긋나면 `CLAUDE.md`가 맞다.
 
 # 검수 항목
@@ -45,6 +45,7 @@ model: opus
 - 추측과 사실의 표기 구분 (`~로 보인다` vs `~였다`)
 - 1인칭 잔존 (`저는`, `제가`)
 - 바로 이해하기 어려운 용어나 공식문서 인용구에 출처 링크가 붙었는지
+- `docs/writing-style.md`의 패턴에 걸리는 표현. `권고`로 지적하고 대체 문장을 함께 제시한다
 
 **예외: 이 항목은 글 본문에만 적용한다.** 코드 블록 안의 주석, 코드에 등장하는 UI 문구,
 설정 파일 내용은 말투 규칙 대상이 아니다. 여기를 잡으면 오탐이다.

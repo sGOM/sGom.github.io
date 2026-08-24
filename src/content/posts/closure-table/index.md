@@ -2,6 +2,7 @@
 title: 계층 구조를 저장하는 Closure Table
 description: 부모-자식 컬럼만으로는 재귀 조회가 필요한 계층 구조를, 조상-자손 관계를 미리 계산해 저장하는 Closure Table로 다루는 방법을 정리한다
 pubDate: 2026-08-14
+updatedDate: 2026-08-24
 category: "데이터베이스"
 tags: ["기본개념", "Database", "계층구조"]
 ---
@@ -89,15 +90,23 @@ SELECT 5, 5, 0;
 
 ## 혼동하기 쉬운 것
 
-**자기 자신 행(depth = 0)을 빼먹기 쉽다.** 조상-자손 관계만 생각하면 자기 참조 행이 필요 없어 보이지만, 이 행이 없으면 "노드 3을 포함한 자신과 자손 전체"처럼 자기 자신을 결과에 포함해야 하는 조회에서 `depth >= 0` 조건이 자기 자신을 걸러내지 못한다. 노드를 삽입할 때 자기 자신 행(`SELECT 5, 5, 0`)을 함께 넣는 이유가 여기 있다.
+**자기 자신 행(depth = 0)을 빼먹기 쉽다.** 조상-자손 관계만 생각하면 자기 참조 행이 필요 없어 보이지만, 이 행이 없으면 "노드 3을 포함한 자신과 자손 전체"처럼 자기 자신을 결과에 포함해야 하는 조회에서 `depth >= 0` 조건이 자기 자신을 걸러내지 못한다.
+
+노드를 삽입할 때 자기 자신 행(`SELECT 5, 5, 0`)을 함께 넣는 이유가 여기 있다.
 
 **`ancestor_id`와 `descendant_id` 조건을 반대로 걸기 쉽다.** 자손을 구할 때는 `ancestor_id`를 고정하고 `descendant_id`를 조회하는데, 조상을 구할 때는 반대로 `descendant_id`를 고정하고 `ancestor_id`를 조회해야 한다. 컬럼 이름이 비슷해서 조회 방향을 반대로 쓰는 실수가 나오기 쉽다.
 
 ## 언제 어떤 것을 쓰나
 
-조상·자손 조회가 잦고 삽입·삭제는 상대적으로 적은 경우에 맞는다. [Nested Set](/posts/nested-set/)과 비교하면 삽입 비용이 삽입 노드의 조상 수에만 비례해 싸지만, 저장 공간은 트리가 한쪽으로 치우칠수록(편향 트리) 늘어나 최악의 경우 O(n²)에 가까워진다. [Path Enumeration](/posts/path-enumeration/)과 비교하면 정수 컬럼끼리 조인하므로 조상·자손 조회 모두 인덱스를 온전히 활용한다는 장점이 있다.
+조상·자손 조회가 잦고 삽입·삭제는 상대적으로 적은 경우에 맞는다.
 
-노드 수가 아주 많고(수백만 단위) 트리도 깊다면 저장 공간이 부담될 수 있는데, 이때는 재귀 CTE를 지원하는 DBMS라면 [Adjacency List](/posts/adjacency-list/) + `WITH RECURSIVE`도 대안이다. 서브트리를 통째로 다른 부모 밑으로 옮기는 이동이 잦다면 Nested Set은 피하고 Closure Table이나 Adjacency List를 쓴다.
+[Nested Set](/posts/nested-set/)과 비교하면 삽입 비용이 삽입 노드의 조상 수에만 비례해 싸다. 대신 저장 공간은 트리가 한쪽으로 치우칠수록(편향 트리) 늘어나 최악의 경우 O(n²)에 가까워진다.
+
+[Path Enumeration](/posts/path-enumeration/)과 비교하면 정수 컬럼끼리 조인하므로 조상·자손 조회 모두 인덱스를 온전히 활용한다는 장점이 있다.
+
+노드 수가 아주 많고(수백만 단위) 트리도 깊다면 저장 공간이 부담된다. 재귀 CTE를 지원하는 DBMS라면 [Adjacency List](/posts/adjacency-list/) + `WITH RECURSIVE`도 대안이다.
+
+서브트리를 통째로 다른 부모 밑으로 옮기는 이동이 잦다면 Nested Set은 피하고 Closure Table이나 Adjacency List를 쓴다.
 
 ## 더 깊이
 

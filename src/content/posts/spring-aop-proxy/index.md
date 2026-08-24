@@ -2,6 +2,7 @@
 title: Spring AOP 프록시
 description: 스프링이 주입하는 것은 원본 객체가 아니라 프록시다. 그 구조와 제약을 정리한다
 pubDate: 2026-08-09
+updatedDate: 2026-08-24
 category: "Spring"
 tags: ["기본개념", "Spring", "AOP"]
 ---
@@ -41,7 +42,9 @@ Spring Boot는 2.0부터 `proxyTargetClass = true`가 기본값이라, 인터페
 
 **프록시는 별도 클래스다.** 원본을 상속하거나 인터페이스를 구현한 다른 클래스이지 원본 자신이 아니다. `getClass()`를 찍어보면 이름에 `$$SpringCGLIB$$` 같은 접미사가 붙어 있다.
 
-**CGLIB이 상속으로 동작한다**는 사실에서 제약이 전부 따라 나온다. `private` 메서드는 오버라이드할 수 없어 프록시가 가로챌 수 없고, `final` 메서드도 마찬가지다. Kotlin은 클래스와 메서드가 기본적으로 `final`이라 `kotlin-spring` 컴파일러 플러그인이 대상을 자동으로 `open`으로 바꿔주지 않으면 프록시 생성 자체가 실패한다.
+**CGLIB이 상속으로 동작한다**는 데서 제약이 전부 따라 나온다. `private` 메서드는 오버라이드할 수 없어 프록시가 가로챌 수 없고, `final` 메서드도 마찬가지다.
+
+Kotlin은 클래스와 메서드가 기본적으로 `final`이라 `kotlin-spring` 컴파일러 플러그인이 대상을 자동으로 `open`으로 바꿔주지 않으면 프록시 생성 자체가 실패한다.
 
 ## 예시
 

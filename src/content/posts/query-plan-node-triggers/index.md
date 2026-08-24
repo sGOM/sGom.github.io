@@ -2,15 +2,25 @@
 title: 실행계획 노드가 나타나는 조건 — 스캔·조인·정렬 예시로 확인
 description: Seq Scan이 Hash Join으로, Nested Loop이 Merge Join으로 바뀌는 조건을 실제 EXPLAIN 결과로 확인한다
 pubDate: 2026-08-18
+updatedDate: 2026-08-24
 category: "데이터베이스"
 tags: ["기본개념", "Database", "PostgreSQL"]
 ---
 
 ## 왜 필요한가
 
-[실행계획 읽기 — 스캔, 조인, rows와 loops](/posts/query-plan-basics/)에서 각 노드가 하는 일과 `cost`·`rows`·`loops` 표기의 의미를 정리했다. 그런데 "이 노드가 왜 하필 지금 나왔는지"는 다른 질문이다. Seq Scan을 보고 무조건 인덱스가 없다고 짐작하거나, Hash Join을 보고 통계가 잘못됐다고 넘겨짚는 경우가 있다.
+[실행계획 읽기 — 스캔, 조인, rows와 loops](/posts/query-plan-basics/)에서 각 노드가 하는 일과 `cost`·`rows`·`loops` 표기의 의미를 정리했다.
+
+그런데 "이 노드가 왜 하필 지금 나왔는지"는 다른 질문이다. Seq Scan을 보고 무조건 인덱스가 없다고 짐작하거나, Hash Join을 보고 통계가 잘못됐다고 넘겨짚는 경우가 있다.
 
 이 글은 같은 데이터, 비슷한 쿼리에서 조건 하나만 바꿔가며 노드가 바뀌는 지점을 직접 확인한다.
+
+## 용어 정리
+
+- **노드(node)**: 실행계획 트리를 이루는 단위. 스캔·조인·정렬처럼 한 가지 처리를 맡는다.
+- **outer와 inner**: 조인 노드에서 바깥 반복을 도는 쪽이 outer, 그 행마다 탐색되는 쪽이 inner다.
+- **커버링 인덱스(covering index)**: 쿼리가 필요로 하는 컬럼을 전부 담은 인덱스. 힙을 읽지 않고 인덱스만으로 답할 수 있다. ([PostgreSQL — Index-Only Scans and Covering Indexes](https://www.postgresql.org/docs/current/indexes-index-only-scans.html))
+- **`enable_*` 파라미터**: 옵티마이저가 특정 노드를 고르지 못하게 막는 설정. 완전히 금지하는 것이 아니라 비용을 크게 매겨 밀어내는 방식이다. 아래 예시에서 노드를 강제로 바꿀 때 쓴다.
 
 ## 핵심 정리
 
@@ -112,7 +122,9 @@ Bitmap Heap Scan on orders  (cost=12.64..1081.27 rows=411 width=31) (actual rows
   ->  Bitmap Index Scan on idx_orders_created_at  (cost=0.00..12.53 rows=411 width=0) (actual rows=442 loops=1)
 ```
 
-범위 조건은 매치하는 행이 인덱스 안에서는 붙어 있어도, 힙 안에서는 흩어져 있을 수 있다. Bitmap Heap Scan은 인덱스로 힙 블록 위치를 먼저 모으고 정렬해서, 같은 블록을 두 번 읽지 않는다. `enable_bitmapscan`을 꺼야 같은 쿼리에서 순수 Index Scan을 볼 수 있다 — 기본 비용 모델에서는 이 조건에 Bitmap Heap Scan이 근소하게 더 싸다.
+범위 조건은 매치하는 행이 인덱스 안에서는 붙어 있어도, 힙 안에서는 흩어져 있을 수 있다.
+
+Bitmap Heap Scan은 인덱스로 힙 블록 위치를 먼저 모으고 정렬해서, 같은 블록을 두 번 읽지 않는다. `enable_bitmapscan`을 꺼야 같은 쿼리에서 순수 Index Scan을 볼 수 있다. 기본 비용 모델에서는 이 조건에 Bitmap Heap Scan이 근소하게 더 싸다.
 
 ### 조인
 
@@ -161,7 +173,9 @@ Hash Join  (cost=10.26..6186.44 rows=600 width=24) (actual rows=632 loops=1)
               Filter: (name = 'customer_250'::text)
 ```
 
-`orders`를 인덱스로 좁힐 방법이 없으니 30만 행을 전부 훑어 해시 테이블(`customers` 쪽, 1행)과 맞춰본다. 결과는 같은 632행인데 실행 시간이 1.3 ms에서 40 ms로 늘었다. **"조인 조건에 인덱스가 없다"가 Hash Join을 부르는 가장 흔한 경로**이지만, 인덱스가 있어도 매치되는 행이 많으면(예: VIP 등급 112명, 전체의 22%가 매치) 옵티마이저는 인덱스를 반복 조회하는 것보다 Seq Scan + Hash Join을 택한다. 인덱스 유무보다 "조인 후 남는 행이 얼마나 되는가"가 더 근본적인 기준이다.
+`orders`를 인덱스로 좁힐 방법이 없으니 30만 행을 전부 훑어 해시 테이블(`customers` 쪽, 1행)과 맞춰본다. 결과는 같은 632행인데 실행 시간이 1.3 ms에서 40 ms로 늘었다.
+
+**"조인 조건에 인덱스가 없다"가 Hash Join을 부르는 가장 흔한 경로**다. 다만 인덱스가 있어도 매치되는 행이 많으면(예: VIP 등급 112명, 전체의 22%) 옵티마이저는 인덱스 반복 조회 대신 Seq Scan + Hash Join을 택한다. 인덱스 유무보다 "조인 후 남는 행이 얼마나 되는가"가 더 근본적인 기준이다.
 
 **전체 조인 + `customer_id` 기준 정렬 요청 → Merge Join.** `customer_id`에 인덱스(`idx_orders_customer_id`)를 다시 만든 상태에서, 필터 없이 전부 조인하고 `customer_id` 순으로 정렬해 달라고 했다.
 
@@ -183,7 +197,9 @@ Merge Join  (cost=0.70..18855.40 rows=300000 width=8) (actual rows=300000 loops=
   ->  Index Scan using idx_orders_customer_id on orders o  (actual rows=300000 loops=1)
 ```
 
-양쪽 다 `customer_id`(또는 그와 같은 컬럼인 `id`) 순으로 인덱스를 스캔할 수 있고, 결과도 그 순서가 필요했다. 두 흐름을 나란히 훑으며 맞추면 별도 정렬 없이 끝난다. 정렬 요구가 없었다면 이 규모(30만 행 전부)에서는 Hash Join이 더 쌀 때가 많다 — Merge Join은 "정렬된 두 입력을 그대로 쓸 수 있을 때" 유리하다.
+양쪽 다 `customer_id`(또는 그와 같은 컬럼인 `id`) 순으로 인덱스를 스캔할 수 있고, 결과도 그 순서가 필요했다. 두 흐름을 나란히 훑으며 맞추면 별도 정렬 없이 끝난다.
+
+정렬 요구가 없었다면 이 규모(30만 행 전부)에서는 Hash Join이 더 쌀 때가 많다. Merge Join은 "정렬된 두 입력을 그대로 쓸 수 있을 때" 유리하다.
 
 ### 정렬과 집계
 
@@ -218,7 +234,7 @@ HashAggregate  (cost=7632.00..7632.06 rows=5 width=47) (actual rows=5 loops=1)
   ->  Seq Scan on orders  (actual rows=300000 loops=1)
 ```
 
-정렬 없이 값마다 해시 버킷을 만들어 바로 집계한다. 그룹이 500개(`customer_id`)여도 메모리에 다 들어가므로 기본값 그대로면 여전히 HashAggregate가 나온다 — 아래는 그 선택을 강제로 끈 결과다.
+정렬 없이 값마다 해시 버킷을 만들어 바로 집계한다. 그룹이 500개(`customer_id`)여도 메모리에 다 들어가므로, 기본값 그대로면 여전히 HashAggregate가 나온다. 아래는 그 선택을 강제로 끈 결과다.
 
 **HashAggregate를 끄면(`enable_hashagg = off`) → GroupAggregate.** 실무에서 자연 발생하는 경우는 그룹 수가 `work_mem`을 넘어설 만큼 많을 때인데, 이 데이터셋에는 그런 컬럼이 없어 강제로 재현했다.
 
@@ -236,7 +252,9 @@ GroupAggregate  (cost=0.42..7057.42 rows=500 width=12) (actual rows=500 loops=1)
         Heap Fetches: 0
 ```
 
-`ORDER BY customer_id`를 걸었는데도 별도 Sort 노드가 없다. 인덱스로 이미 `customer_id` 순서로 읽고 있어서, 그 순서를 그대로 타고 그룹을 묶었기 때문이다. GroupAggregate는 입력이 이미 정렬돼 있을 때 정렬 비용 없이 쓸 수 있다는 게 장점이지만, 정렬된 입력이 없으면 Sort를 먼저 붙여야 해서 대개는 HashAggregate보다 비싸다.
+`ORDER BY customer_id`를 걸었는데도 별도 Sort 노드가 없다. 인덱스로 이미 `customer_id` 순서로 읽고 있어서, 그 순서를 그대로 타고 그룹을 묶었기 때문이다. 
+
+GroupAggregate의 장점은 입력이 이미 정렬돼 있을 때 정렬 비용이 들지 않는다는 것이다. 정렬된 입력이 없으면 Sort를 먼저 붙여야 해서 대개 HashAggregate보다 비싸다.
 
 ## 혼동하기 쉬운 것
 

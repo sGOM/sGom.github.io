@@ -2,6 +2,7 @@
 title: 계층 구조를 숫자 구간으로 저장하는 Nested Set
 description: 트리를 깊이 우선으로 순회해 매긴 left/right 번호로 계층을 표현하는 Nested Set의 동작 방식과 실무 활용 예시를 정리한다
 pubDate: 2026-08-14
+updatedDate: 2026-08-24
 category: "데이터베이스"
 tags: ["기본개념", "Database", "계층구조"]
 ---
@@ -16,7 +17,7 @@ tags: ["기본개념", "Database", "계층구조"]
 
 ## 용어 정리
 
-이 번호를 매기는 절차를 **MPTT(Modified Preorder Tree Traversal)**라 부른다. 전위 순회(preorder traversal) 중 노드에 번호를 한 번이 아니라 두 번(들어갈 때, 나갈 때) 매긴다고 해서 "Modified"가 붙었다. → [Nested set model — Wikipedia](https://en.wikipedia.org/wiki/Nested_set_model)
+이 번호를 매기는 절차를 **MPTT(Modified Preorder Tree Traversal)**라 부른다. 전위 순회(preorder traversal) 중 노드에 번호를 두 번(들어갈 때, 나갈 때) 매긴다고 해서 "Modified"가 붙었다. → [Nested set model — Wikipedia](https://en.wikipedia.org/wiki/Nested_set_model)
 
 ## 핵심 정리
 

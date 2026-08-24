@@ -2,17 +2,22 @@
 title: 계층 구조를 부모 참조로 저장하는 Adjacency List
 description: 각 행이 자신의 parent_id만 저장하는 가장 기본적인 계층 구조 저장 방식과, 재귀 조회가 필요한 이유·비용을 정리한다
 pubDate: 2026-08-14
+updatedDate: 2026-08-24
 category: "데이터베이스"
 tags: ["기본개념", "Database", "계층구조"]
 ---
 
 ## 전제
 
-[Closure Table](/posts/closure-table/), [Path Enumeration](/posts/path-enumeration/), [Nested Set](/posts/nested-set/)은 모두 이 글에서 다루는 Adjacency List의 재귀 조회 문제를 우회하려고 나온 변형이다. Adjacency List가 왜, 얼마나 비싼지를 먼저 짚어야 나머지 세 방식이 "무엇의 대안인지"가 분명해진다.
+[Closure Table](/posts/closure-table/), [Path Enumeration](/posts/path-enumeration/), [Nested Set](/posts/nested-set/)은 모두 Adjacency List의 재귀 조회 문제를 우회하려고 나온 변형이다.
+
+Adjacency List가 왜, 얼마나 비싼지를 먼저 짚어야 나머지 세 방식이 "무엇의 대안인지"가 분명해진다.
 
 ## 왜 필요한가
 
-계층 구조를 저장하는 가장 단순한 방법은 각 행에 자신의 부모 id(`parent_id`) 하나만 두는 것이다. 스키마가 가장 단순하고 삽입·삭제·이동도 자기 자신 행 하나만 고치면 끝난다. 문제는 조회다. 직계 자식은 `WHERE parent_id = ?` 한 줄로 끝나지만, "이 노드 아래 모든 자손"이나 "이 노드의 모든 조상"을 구하려면 부모를 따라 반복해서 올라가거나 내려가야 한다. 이게 재귀 조회가 필요한 이유다.
+계층 구조를 저장하는 가장 단순한 방법은 각 행에 자신의 부모 id(`parent_id`) 하나만 두는 것이다. 스키마가 가장 단순하고 삽입·삭제·이동도 자기 자신 행 하나만 고치면 끝난다.
+
+문제는 조회다. 직계 자식은 `WHERE parent_id = ?` 한 줄로 끝나지만, "이 노드 아래 모든 자손"이나 "이 노드의 모든 조상"을 구하려면 부모를 따라 반복해서 올라가거나 내려가야 한다. 재귀 조회가 필요한 이유다.
 
 ## 용어 정리
 
@@ -119,7 +124,9 @@ SELECT * FROM managers;
 
 구조가 자주 바뀌고(삽입·삭제·이동이 잦음) 트리가 얕거나 조상·자손 조회가 상대적으로 드물면 Adjacency List가 가장 단순하고 저렴하다. 재귀 CTE를 지원하는 DBMS라면 별도 테이블이나 컬럼 없이도 조회를 해결할 수 있다.
 
-반대로 조회가 압도적으로 많거나 트리가 깊어 재귀 비용이 부담되면 [Closure Table](/posts/closure-table/), [Path Enumeration](/posts/path-enumeration/), [Nested Set](/posts/nested-set/) 중 조회·삽입 패턴에 맞는 방식으로 옮기는 걸 고려한다. 실무에서는 Adjacency List로 시작했다가, 재귀 조회가 실제로 병목이 되는 시점에 다른 방식을 얹는 경우가 많다.
+반대로 조회가 압도적으로 많거나 트리가 깊어 재귀 비용이 부담되면, [Closure Table](/posts/closure-table/), [Path Enumeration](/posts/path-enumeration/), [Nested Set](/posts/nested-set/) 중 조회·삽입 패턴에 맞는 방식으로 옮긴다.
+
+실무에서는 Adjacency List로 시작했다가, 재귀 조회가 실제로 병목이 되는 시점에 다른 방식을 얹는 경우가 많다.
 
 ## 더 깊이
 

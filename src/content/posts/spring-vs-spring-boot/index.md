@@ -2,6 +2,7 @@
 title: Spring과 Spring Boot의 차이
 description: Boot는 Framework의 대안이 아니라 그 위에 얹는 레이어다. 무엇이 달라지는지 축별로 갈라놓고, 자동설정이 물러나는 방식까지 본다
 pubDate: 2026-08-20
+updatedDate: 2026-08-24
 category: "Spring"
 tags: ["기본개념", "Spring", "Spring Boot"]
 ---
@@ -140,7 +141,9 @@ public class MyDataSourceAutoConfiguration {
 - `@ConditionalOnClass` — 해당 클래스가 클래스패스에 있을 때만 적용한다. 그래서 `spring-boot-starter-web`을 넣는 것만으로 톰캣 설정이 켜지고, 뺀 프로젝트에서는 조용히 건너뛴다.
 - `@ConditionalOnMissingBean` — 같은 타입의 빈이 아직 없을 때만 만든다. `DataSource`를 직접 등록해 두면 자동설정은 물러난다.
 
-이 물러남이 성립하는 이유는 순서 때문이다. **자동설정은 사용자가 정의한 빈이 모두 등록된 뒤에 적용된다**([Condition Annotations](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations.bean-conditions)). 자동설정이 먼저 돌았다면 `@ConditionalOnMissingBean`은 항상 참이 되어 사용자 빈과 충돌했을 것이다.
+물러남이 성립하는 이유는 순서다. **자동설정은 사용자가 정의한 빈이 모두 등록된 뒤에 적용된다**([Condition Annotations](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html#features.developing-auto-configuration.condition-annotations.bean-conditions)).
+
+자동설정이 먼저 돌았다면 `@ConditionalOnMissingBean`은 항상 참이 되어 사용자 빈과 충돌했을 것이다.
 
 그래서 Boot는 "설정을 못 하게 막는 도구"가 아니다. 아무것도 안 하면 기본값이 들어가고, 직접 정의하면 그 자리만 정의한 쪽이 가져간다. 통째로 갈아엎지 않고 필요한 빈만 덮어쓸 수 있다.
 
@@ -183,11 +186,15 @@ spring:
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 ```
 
-FQCN은 버전에 묶인다. 위는 Boot 3.x 기준이고, 자동설정이 모듈별로 쪼개진 Boot 4.x에서는 같은 클래스가 `org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`에 있다. 클래스패스에 없는 이름을 적으면 예외도 경고도 없이 무시되므로, 제외가 먹지 않으면 경로부터 확인한다.
+FQCN은 버전에 묶인다. 위는 Boot 3.x 기준이고, 자동설정이 모듈별로 쪼개진 Boot 4.x에서는 같은 클래스가 `org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`에 있다.
+
+클래스패스에 없는 이름을 적으면 예외도 경고도 없이 무시되므로, 제외가 먹지 않으면 경로부터 확인한다.
 
 ## 혼동하기 쉬운 것
 
-**"Boot를 쓰면 Framework는 안 쓴다."** Boot 프로젝트의 의존성 트리에 `spring-core`, `spring-context`, `spring-web`이 그대로 들어 있다. `@Component`, `@Transactional`, `@RequestMapping`은 전부 Framework의 것이다. Boot가 추가한 것은 `@SpringBootApplication` 계열, `@ConditionalOn*`, `@ConfigurationProperties`, `@SpringBootTest` 등이다.
+**"Boot를 쓰면 Framework는 안 쓴다."** Boot 프로젝트의 의존성 트리에 `spring-core`, `spring-context`, `spring-web`이 그대로 들어 있다. `@Component`, `@Transactional`, `@RequestMapping`은 전부 Framework의 것이다.
+
+Boot가 추가한 것은 `@SpringBootApplication` 계열, `@ConditionalOn*`, `@ConfigurationProperties`, `@SpringBootTest` 등이다.
 
 **"Boot에는 설정이 없다."** 설정이 없는 게 아니라 기본값이 미리 정해져 있는 것이다. 내장 서버가 8080에서 뜨는 것도 누군가 그렇게 등록해 둔 결과이고, `server.port`로 바꿀 수 있다.
 

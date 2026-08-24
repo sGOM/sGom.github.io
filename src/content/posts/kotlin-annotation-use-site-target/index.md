@@ -2,6 +2,7 @@
 title: Kotlin 애노테이션 use-site target
 description: Kotlin 프로퍼티에 애노테이션을 붙일 때 field·get·set·param 중 어디로 갈지 정하는 use-site target을 표로 정리한다
 pubDate: 2026-08-13
+updatedDate: 2026-08-24
 category: "Kotlin"
 tags: ["기본개념", "Kotlin", "애노테이션"]
 ---
@@ -14,7 +15,15 @@ Kotlin의 `val`/`var` 프로퍼티 하나는 컴파일되면 여러 JVM 요소�
 class Example(val foo: String)
 ```
 
-`foo`는 필드 하나, getter 하나, 생성자 파라미터 하나로 컴파일된다. 여기에 `@Ann val foo: String`처럼 타깃 없이 애노테이션을 붙이면, 컴파일러가 이 중 하나를 골라 붙인다. 리플렉션으로 필드를 뒤지는 라이브러리와 getter를 뒤지는 라이브러리가 다른 곳을 본다면, 애노테이션을 붙였는데도 인식되지 않는 상황이 생긴다. use-site target은 이 위치를 명시하는 문법이다.
+`foo`는 필드 하나, getter 하나, 생성자 파라미터 하나로 컴파일된다. 여기에 `@Ann val foo: String`처럼 타깃 없이 애노테이션을 붙이면 컴파일러가 이 중 하나를 골라 붙인다.
+
+리플렉션으로 필드를 뒤지는 라이브러리와 getter를 뒤지는 라이브러리가 다른 곳을 본다면, 애노테이션을 붙였는데도 인식되지 않는다. use-site target은 이 위치를 명시하는 문법이다.
+
+## 용어 정리
+
+- **use-site target**: 애노테이션을 프로퍼티의 어느 JVM 요소에 붙일지 `@타깃:애노테이션` 형태로 지정하는 문법. ([Kotlin Docs — Annotation use-site targets](https://kotlinlang.org/docs/annotations.html#annotation-use-site-targets))
+- **backing field**: 프로퍼티 값을 실제로 담는 필드. getter와 setter가 읽고 쓰는 저장소다.
+- **기본 타깃 우선순위**: 타깃을 생략했을 때 컴파일러가 `param` → `property` → `field` 순으로 검사해 처음 적용 가능한 것을 고르는 규칙.
 
 ## 핵심 정리
 
@@ -66,7 +75,9 @@ class Holder {
 }
 ```
 
-`inCtor`는 생성자 파라미터로 선언됐으므로 `param`이 적용 가능해 거기서 멈춘다. `plain`은 생성자 파라미터가 아니라 `param`이 적용 불가능하고, `property`가 적용 가능하므로 `property`로 간다. `property`는 JVM에 실체가 없어서, 컴파일러는 `getPlain$annotations()`라는 빈 정적 메서드를 만들어 거기에 애노테이션을 붙인다. 필드가 아니다.
+`inCtor`는 생성자 파라미터로 선언됐으므로 `param`이 적용 가능해 거기서 멈춘다. `plain`은 생성자 파라미터가 아니라 `param`이 적용 불가능하고, `property`가 적용 가능하므로 `property`로 간다.
+
+`property`는 JVM에 실체가 없다. 컴파일러는 `getPlain$annotations()`라는 빈 정적 메서드를 만들어 거기에 애노테이션을 붙인다. 필드가 아니다.
 
 이 우선순위와 합성 메서드가 생기는 이유는 [Kotlin 프로퍼티가 여러 JVM 요소로 컴파일되는 이유](/posts/kotlin-annotation-use-site-target-deep-dive/)에서 바이트코드로 다룬다.
 

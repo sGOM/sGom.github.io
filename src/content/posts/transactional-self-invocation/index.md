@@ -68,7 +68,7 @@ class SelfInvocationService(
     @Transactional
     fun transactionalWork() {
         save(MESSAGE)
-        throw RuntimeException()
+        throw InnerFailureException("self-invocation 실험용 예외")
     }
 
     // 지금 트랜잭션이 열려 있는지 찍어서 돌려준다

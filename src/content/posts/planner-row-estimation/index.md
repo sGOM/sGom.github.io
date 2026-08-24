@@ -47,10 +47,21 @@ PostgreSQL은 `ANALYZE` 시점에 컬럼별로 `most_common_vals`(MCV, 자주 �
 문제는 **MCV 목록이 그 컬럼의 값을 전부 담고 있는** 경우다. 그러면 `most_common_freqs`의 합이 1.0이 되고 `n_distinct`와 MCV 개수도 같아진다.
 
 ```
-선택도 = (1 - 1.0) / (n_distinct - MCV 개수) = 0 / 0
+분자 = 1 - 1.0            = 0
+분모 = n_distinct - MCV 개수 = 0
 ```
 
-분자가 0이므로 선택도는 0이 된다.
+분모가 0이라고 나눗셈이 터지지는 않는다. PostgreSQL은 나눌 값이 남아 있을 때만 나눈다. `var_eq_const()`는 분자를 먼저 구해 두고 `otherdistinct > 1`일 때에만 그것으로 나누므로, 분모가 0인 이 경우에는 나눗셈을 건너뛰고 분자를 그대로 선택도로 쓴다. 그 분자가 0이다.
+
+```c
+/* src/backend/utils/adt/selfuncs.c — var_eq_const() */
+selec = 1.0 - sumcommon - nullfrac;
+CLAMP_PROBABILITY(selec);
+
+otherdistinct = get_variable_numdistinct(vardata, &isdefault) - sslot.nnumbers;
+if (otherdistinct > 1)
+    selec /= otherdistinct;
+```
 
 이 조건은 생각보다 쉽게 만들어진다. 기본 `default_statistics_target`은 100이라 MCV를 100개까지 담고, 소형 테이블은 `ANALYZE`가 전수에 가깝게 표본을 뜬다. 서로 다른 값이 100종 미만인 소형 테이블이면 값이 하나든 열이든 결과는 같다. 값의 종류가 적다는 것이 오히려 함정이 되는 구조다.
 
@@ -231,3 +242,4 @@ def test_통계가_정확하면_큰_테이블을_한_번만_스캔한다(after_r
 - [PostgreSQL Documentation — Row Estimation Examples](https://www.postgresql.org/docs/current/row-estimation-examples.html)
 - [PostgreSQL Documentation — Planner Statistics](https://www.postgresql.org/docs/current/planner-stats.html)
 - [postgres/src/backend/optimizer/path/costsize.c — `clamp_row_est`](https://github.com/postgres/postgres/blob/master/src/backend/optimizer/path/costsize.c)
+- [postgres/src/backend/utils/adt/selfuncs.c — `var_eq_const`](https://github.com/postgres/postgres/blob/master/src/backend/utils/adt/selfuncs.c)

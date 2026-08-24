@@ -183,7 +183,7 @@ fun main() {
 ## 경계 조건
 
 - `suspend` 함수는 다른 suspend 함수 안에서만 직접 호출할 수 있다. 컴파일러가 넘겨줄 `Continuation` 인자가 필요하기 때문이며, 일반 함수에서 호출하려면 `runBlocking`처럼 코루틴을 새로 시작하는 진입점을 거쳐야 한다.
-- 상태 머신은 함수 하나당 하나씩 생기는 게 아니라, 람다로 넘긴 suspend 블록마다 별도로 생성된다. 위 예시의 `block`도 `awaitValue`와 별개로 자신만의 `ContinuationImpl` 서브클래스를 갖는다.
+- 상태 머신은 이름 붙은 suspend 함수에만 생기는 게 아니라, 람다로 넘긴 suspend 블록마다 별도로 생성된다. 위 예시의 `block`도 `awaitValue`와 별개로 자신만의 `ContinuationImpl` 서브클래스를 갖는다.
 
 ## 참고
 

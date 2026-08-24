@@ -38,7 +38,7 @@ class Example(val foo: String)
 | `setparam` | setter의 파라미터 | `var`에만 |
 | `delegate` | 위임 인스턴스를 담는 필드 | `by` 위임 프로퍼티에만 |
 | `receiver` | 확장 함수/프로퍼티의 리시버 파라미터 | 확장 함수·프로퍼티에만 |
-| `all` (2.2~, 실험적) | `param`+`field`+`get`(+`setparam`) 한 번에 | `-Xannotation-target-all` 플래그 필요 |
+| `all` (2.2~, 실험적) | `param`+`property`+`field`+`get`(+`setparam`) 한 번에 | `-Xannotation-target-all` 플래그 필요 |
 
 ## 예시
 

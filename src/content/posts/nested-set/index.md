@@ -13,9 +13,11 @@ tags: ["기본개념", "Database", "계층구조"]
 
 ## 왜 필요한가
 
-인접 리스트(parent_id만 저장)는 조상·자손 조회에 재귀가 필요하다. Nested Set은 각 노드에 숫자 두 개(`left`, `right`)를 매겨, 자손이 항상 조상의 `[left, right]` 구간 **안**에 완전히 들어오게 만든다. 조회가 범위 비교 하나로 끝난다는 게 가장 큰 강점이다.
+인접 리스트(parent_id만 저장)는 조상·자손 조회에 재귀가 필요하다. Nested Set은 각 노드에 숫자 두 개(`lft`, `rgt`)를 매겨, 자손이 항상 조상의 `[lft, rgt]` 구간 **안**에 완전히 들어오게 만든다. 조회가 범위 비교 하나로 끝난다는 게 가장 큰 강점이다.
 
 ## 용어 정리
+
+컬럼 이름은 `lft`/`rgt`로 줄여 쓴다. `LEFT`와 `RIGHT`는 SQL 예약어라 컬럼 이름으로 그대로 쓰면 문법 오류가 난다. → [PostgreSQL — SQL Key Words](https://www.postgresql.org/docs/current/sql-keywords-appendix.html)
 
 이 번호를 매기는 절차를 **MPTT(Modified Preorder Tree Traversal)**라 부른다. 전위 순회(preorder traversal) 중 노드에 번호를 두 번(들어갈 때, 나갈 때) 매긴다고 해서 "Modified"가 붙었다. → [Nested set model — Wikipedia](https://en.wikipedia.org/wiki/Nested_set_model)
 
@@ -23,10 +25,10 @@ tags: ["기본개념", "Database", "계층구조"]
 
 | | 내용 |
 |---|---|
-| 저장 컬럼 | `left`, `right` (정수) |
-| 자손 조회 | `left`가 자신의 `[left, right]` 구간 안 |
-| 조상 조회 | `left`/`right`가 자신을 감싸는 행 |
-| 삽입·이동 비용 | 삽입 지점 뒤 모든 노드의 `left`/`right` 재계산 |
+| 저장 컬럼 | `lft`, `rgt` (정수) |
+| 자손 조회 | `lft`가 자신의 `[lft, rgt]` 구간 안 |
+| 조상 조회 | `lft`/`rgt`가 자신을 감싸는 행 |
+| 삽입·이동 비용 | 삽입 지점 뒤 모든 노드의 `lft`/`rgt` 재계산 |
 | 인덱스 활용 | 범위 비교(`BETWEEN`)라 인덱스를 잘 탄다 |
 
 ## 항목별 설명
@@ -40,18 +42,18 @@ tags: ["기본개념", "Database", "계층구조"]
 └─ 영업팀장
 ```
 
-`left`/`right`는 트리를 깊이 우선으로 순회하며 매긴 번호다. 노드에 처음 들어갈 때 카운터를 하나 올려 `left`에 적고, 그 노드의 자식을 모두 처리한 뒤 빠져나올 때 카운터를 다시 올려 `right`에 적는다. 여는 괄호와 닫는 괄호를 순서대로 매긴다고 생각하면 된다.
+`lft`/`rgt`는 트리를 깊이 우선으로 순회하며 매긴 번호다. 노드에 처음 들어갈 때 카운터를 하나 올려 `lft`에 적고, 그 노드의 자식을 모두 처리한 뒤 빠져나올 때 카운터를 다시 올려 `rgt`에 적는다. 여는 괄호와 닫는 괄호를 순서대로 매긴다고 생각하면 된다.
 
-1. 대표이사에 들어간다 → `left = 1`
-2. 개발팀장에 들어간다 → `left = 2`
-3. 백엔드 개발자에 들어간다 → `left = 3`
-4. 백엔드 개발자에서 나온다 → `right = 4`
-5. 개발팀장에서 나온다 → `right = 5`
-6. 영업팀장에 들어간다 → `left = 6`
-7. 영업팀장에서 나온다 → `right = 7`
-8. 대표이사에서 나온다 → `right = 8`
+1. 대표이사에 들어간다 → `lft = 1`
+2. 개발팀장에 들어간다 → `lft = 2`
+3. 백엔드 개발자에 들어간다 → `lft = 3`
+4. 백엔드 개발자에서 나온다 → `rgt = 4`
+5. 개발팀장에서 나온다 → `rgt = 5`
+6. 영업팀장에 들어간다 → `lft = 6`
+7. 영업팀장에서 나온다 → `rgt = 7`
+8. 대표이사에서 나온다 → `rgt = 8`
 
-| id | name | left | right |
+| id | name | lft | rgt |
 |---|---|---|---|
 | 1 | 대표이사 | 1 | 8 |
 | 2 | 개발팀장 | 2 | 5 |
@@ -65,29 +67,29 @@ tags: ["기본개념", "Database", "계층구조"]
 ```sql
 -- 개발팀장(2)의 모든 하위 조직
 SELECT * FROM org
-WHERE left BETWEEN 2 AND 5 AND id != 2;
--- 결과: 백엔드 개발자 (left=3, right=4)
+WHERE lft BETWEEN 2 AND 5 AND id != 2;
+-- 결과: 백엔드 개발자 (lft=3, rgt=4)
 
 -- 백엔드 개발자(3)의 결재 라인(모든 상위 조직)
 SELECT * FROM org
-WHERE left <= 3 AND right >= 4;
+WHERE lft <= 3 AND rgt >= 4;
 -- 결과: 대표이사(1,8), 개발팀장(2,5)
 ```
 
 삽입 비용이 왜 큰지는 실제로 한 명을 끼워 넣어보면 드러난다. 개발팀장 밑에 "프론트엔드 개발자"를 추가한다.
 
 ```sql
--- 개발팀장의 (옛) right 값인 5를 기준으로, 그 이후 번호를 전부 2칸씩 민다
-UPDATE org SET right = right + 2 WHERE right >= 5;
-UPDATE org SET left  = left  + 2 WHERE left  >= 5;
+-- 개발팀장의 (옛) rgt 값인 5를 기준으로, 그 이후 번호를 전부 2칸씩 민다
+UPDATE org SET rgt = rgt + 2 WHERE rgt >= 5;
+UPDATE org SET lft  = lft  + 2 WHERE lft  >= 5;
 
--- 비어난 자리(5, 6)에 새 노드를 끼운다
-INSERT INTO org (name, left, right) VALUES ('프론트엔드 개발자', 5, 6);
+-- 비운 자리(5, 6)에 새 노드를 끼운다
+INSERT INTO org (name, lft, rgt) VALUES ('프론트엔드 개발자', 5, 6);
 ```
 
 결과는 이렇게 바뀐다.
 
-| id | name | left | right |
+| id | name | lft | rgt |
 |---|---|---|---|
 | 1 | 대표이사 | 1 | 10 |
 | 2 | 개발팀장 | 2 | 7 |
@@ -99,9 +101,9 @@ INSERT INTO org (name, left, right) VALUES ('프론트엔드 개발자', 5, 6);
 
 ## 혼동하기 쉬운 것
 
-**두 `UPDATE`의 조건을 바꿔 쓰면 트리가 깨진다.** `right` 컬럼은 부모의 옛 `right` 이상인 모든 행을 밀고, `left` 컬럼도 같은 기준값 이상인 행을 민다. 두 조건은 같은 값을 쓰지만 서로 다른 컬럼을 대상으로 한다는 점이 헷갈리기 쉽다.
+**두 `UPDATE`의 조건을 바꿔 쓰면 트리가 깨진다.** `rgt` 컬럼은 부모의 옛 `rgt` 이상인 모든 행을 밀고, `lft` 컬럼도 같은 기준값 이상인 행을 민다. 두 조건은 같은 값을 쓰지만 서로 다른 컬럼을 대상으로 한다는 점이 헷갈리기 쉽다.
 
-**`left`/`right`는 실제로 의미 있는 값이 아니라 순서일 뿐이다.** 두 값 사이의 차이나 크기 자체에는 의미가 없고, "어떤 구간이 어떤 구간을 포함하는가"만 의미가 있다.
+**`lft`/`rgt`는 실제로 의미 있는 값이 아니라 순서일 뿐이다.** 두 값 사이의 차이나 크기 자체에는 의미가 없고, "어떤 구간이 어떤 구간을 포함하는가"만 의미가 있다.
 
 ## 언제 어떤 것을 쓰나
 

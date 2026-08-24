@@ -79,7 +79,7 @@ Phantom Read는 조회 대상이 행 하나가 아니라 범위라는 점만 다
 | MySQL (InnoDB) | REPEATABLE READ | 갭 락·넥스트키 락으로 잠금 읽기의 Phantom Read를 상당 부분 막는다 |
 | PostgreSQL | READ COMMITTED | READ UNCOMMITTED를 요청해도 READ COMMITTED로 동작한다 |
 | Oracle | READ COMMITTED | REPEATABLE READ를 지원하지 않는다 |
-| H2 | READ COMMITTED | MVStore 모드의 REPEATABLE READ는 스냅샷 기반이라 Phantom Read도 막힌다 |
+| H2 | READ COMMITTED | 표준 4단계 외에 `SNAPSHOT`이 더 있고, 문서가 Phantom Read를 막는다고 명시한 것은 그쪽이다 |
 
 표만 외우고 실무에 적용하면 틀리는 이유가 여기 있다. 자세한 내용과 재현 결과는 [트랜잭션 격리 수준은 DBMS마다 다르게 동작한다](/posts/transaction-isolation-levels/)에 있다.
 

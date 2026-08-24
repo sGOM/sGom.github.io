@@ -35,7 +35,7 @@ Old 영역에 승격할 공간조차 없으면 힙 전체(Young + Old + 메타�
 
 Old 영역 점유율이 `-XX:InitiatingHeapOccupancyPercent`(기본 45%)를 넘으면 애플리케이션과 동시에 도는 동시 마킹 사이클(concurrent marking cycle)을 시작해 Old 리전 중 가비지가 많은 곳을 찾는다. 이후 Young GC에 그 Old 리전 몇 개를 끼워 함께 회수하는 혼합 수집(mixed collection)을 한다. Old 회수 비용을 한 번의 긴 정지가 아니라 여러 번의 짧은 정지로 나누는 방식이다.
 
-그런데도 회수 속도가 할당 속도를 못 따라가면 G1도 단일 스레드 압축(compaction)으로 힙 전체를 정리하는 Full GC(`G1 Compaction Pause`)로 전환된다. 로그의 `Evacuation Failure`가 이 상황이다. G1의 설계 목표는 이 전환을 최대한 늦추는 것이지, 없애는 게 아니다.
+그런데도 회수 속도가 할당 속도를 못 따라가면 G1도 단일 스레드 압축(compaction)으로 힙 전체를 정리하는 Full GC(`G1 Compaction Pause`)로 전환된다. 로그의 `Evacuation Failure`는 리전 복사에 실패했다는 표시일 뿐이라 Full GC 없이 지나가기도 하고, 실제로 전환되면 `Pause Full (G1 Compaction Pause)`로 찍힌다. G1의 설계 목표는 이 전환을 최대한 늦추는 것이지, 없애는 게 아니다.
 
 ## 직접 확인
 

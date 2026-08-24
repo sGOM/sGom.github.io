@@ -29,7 +29,7 @@ PostgreSQL의 REPEATABLE READ는 트랜잭션 시작 시점의 스냅샷을 보�
 
 ## 직접 확인
 
-아래는 H2(2.x, MVStore 모드)에서 REPEATABLE READ를 검증한 테스트다. H2도 스냅샷 방식이므로, 읽기 트랜잭션 시작 후 다른 트랜잭션이 새 행을 INSERT하고 커밋해도 그 행이 보이지 않는지 확인한다.
+아래는 H2(2.x, MVStore 모드)에서 REPEATABLE READ를 검증한 테스트다. 읽기 트랜잭션 시작 후 다른 트랜잭션이 새 행을 INSERT하고 커밋해도 그 행이 보이지 않는지 확인한다.
 
 `worker`와 `Signal`은 두 트랜잭션의 실행 순서를 스레드로 고정해 결과가 흔들리지 않게 하는 테스트 헬퍼다.
 
@@ -69,6 +69,12 @@ Given("REPEATABLE_READ") {
 ```
 
 저장소: [github.com/sGOM/spring-transactional-test](https://github.com/sGOM/spring-transactional-test)
+
+**이 결과는 H2가 보장하는 동작이 아니다.** H2 문서는 REPEATABLE READ를 "Dirty reads and non-repeatable reads aren't possible, phantom reads are possible"로 규정하고, 팬텀 리드까지 막는다고 명시한 수준은 따로 있는 `SNAPSHOT`이다. ([H2 — Transaction Isolation](https://h2database.com/html/advanced.html))
+
+즉 위 테스트가 통과하는 것은 MVStore 구현이 문서가 약속한 것보다 더 강하게 격리하기 때문이고, 버전이 바뀌면 달라질 수 있는 자리다. 팬텀 차단이 필요하면 이름이 REPEATABLE READ인 것에 기대지 말고 `SNAPSHOT`을 지정해야 한다.
+
+이름을 외우는 것으로는 부족하다는 이 글의 주장이 여기서 한 겹 더 들어간다. 같은 이름의 격리 수준이 DBMS마다 다를 뿐 아니라, **문서가 보장하는 것과 구현이 실제로 하는 것도 다를 수 있다.**
 
 ## 언제 쓰고 언제 안 쓰나
 

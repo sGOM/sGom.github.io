@@ -177,7 +177,7 @@ enabled explicitly. This can be done by supplying the compiler argument
 '-Xannotation-target-all', but note that no stability guarantees are provided.
 ```
 
-`-Xannotation-target-all`을 켜고 `@all:Ann val email: String`(주 생성자 파라미터)을 컴파일하면 `param`, `field`, `get`(getter) 세 곳 모두에 `Ann`이 붙는 것을 확인했다. `var`였다면 `setparam`까지 네 곳에 붙는다.
+`-Xannotation-target-all`을 켜고 `@all:Ann val email: String`(주 생성자 파라미터)을 컴파일하면 `param`, `property`, `field`, `get`(getter) 네 곳 모두에 `Ann`이 붙는 것을 확인했다. `property` 몫은 앞에서 본 것과 같은 `getEmail$annotations()` 합성 메서드로 나타나므로 `javap` 출력에서 세기 쉽게 빠진다. `var`였다면 setter 파라미터까지 다섯 곳이다.
 
 ## 대안과 트레이드오프
 

@@ -97,7 +97,8 @@ p {
   margin: 1.15rem 0;
 }
 
-li {
+/* 본문 목록에만. 전역에 주면 사이드바 목록의 gap 위에 얹혀 간격이 두 배가 된다 */
+.post-content li {
   margin: 0.4rem 0;
 }
 

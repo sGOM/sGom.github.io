@@ -23,6 +23,7 @@
 - [ ] [MyBatis의 #{}와 ${} — 바인딩과 문자열 치환](../src/content/posts/mybatis-parameter-binding/index.md)
 - [ ] [계층 구조를 숫자 구간으로 저장하는 Nested Set](../src/content/posts/nested-set/index.md)
 - [ ] [계층 구조를 문자열로 저장하는 Path Enumeration](../src/content/posts/path-enumeration/index.md)
+- [ ] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)
 - [ ] [행 추정치 1이 조인 플랜을 뒤집는 과정](../src/content/posts/planner-row-estimation/index.md)
 - [ ] [실행계획 읽기 — 스캔, 조인, rows와 loops](../src/content/posts/query-plan-basics/index.md)
 - [ ] [실행계획 노드가 나타나는 조건 — 스캔·조인·정렬 예시로 확인](../src/content/posts/query-plan-node-triggers/index.md)

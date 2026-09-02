@@ -3,7 +3,7 @@ title: JVM GC 파고들기 — 컬렉터마다 다르게 도는 이유
 description: weak generational hypothesis 하나로는 설명 안 되는 컬렉터별 동작 차이를, 같은 메모리 압박 상황에서 Serial·Parallel·G1의 실제 GC 로그로 비교해 확인한다
 pubDate: 2026-08-15
 updatedDate: 2026-08-24
-category: "JAVA"
+category: "Java"
 tags: ["파고들기", "JVM", "Java", "GC"]
 ---
 

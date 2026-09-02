@@ -2,7 +2,7 @@
 title: "POSIX가 정의한 줄과 파일 끝 개행"
 description: "GitHub diff에 뜨는 No newline at end of file 경고를, POSIX의 line과 incomplete line 정의로 설명한다."
 pubDate: 2026-08-31
-category: "OS"
+category: "컴퓨터공학"
 tags: ["기본개념", "POSIX", "Git"]
 ---
 

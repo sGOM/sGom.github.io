@@ -2,7 +2,7 @@
 title: git merge 종류 — fast-forward, 머지 커밋, 스쿼시
 description: 같은 git merge 명령이 옵션에 따라 히스토리를 다르게 남기는 이유를 정리하고, fast-forward 조건과 3-way 병합 동작, --squash와 -s/-X 전략 옵션까지 실행 결과로 확인한다
 pubDate: 2026-08-26
-category: "GIT"
+category: "개발도구"
 tags: ["기본개념", "Git", "브랜치", "병합"]
 ---
 

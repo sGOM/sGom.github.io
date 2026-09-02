@@ -2,7 +2,7 @@
 title: "데드락 대응 기법 — Coffman 4조건과 그 대가"
 description: "데드락 대응 기법을 Coffman의 네 조건 중 무엇을 깨는지로 나누고, 예방·회피·탐지의 차이와 각 기법이 치르는 대가를 정리한다."
 pubDate: 2026-08-31
-category: "OS"
+category: "운영체제"
 tags: ["기본개념", "동시성", "Java"]
 ---
 

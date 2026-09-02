@@ -2,7 +2,7 @@
 title: 자바 I/O 버퍼 — write 호출 100만 번을 123번으로
 description: 버퍼가 무엇을 줄이는지, 버퍼 크기를 어떻게 정하는지 실측으로 확인한다
 pubDate: 2026-08-25
-category: "IO"
+category: "Java"
 tags: ["기본개념", "Java", "IO", "버퍼"]
 ---
 

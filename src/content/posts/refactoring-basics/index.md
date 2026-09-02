@@ -3,7 +3,7 @@ title: 리팩토링의 경계 — 무엇까지가 리팩토링인가
 description: 동작을 바꾸면 리팩토링이 아니다. 인접한 작업들과 갈라놓고, 좋은 리팩토링의 판단 기준을 정리한다
 pubDate: 2026-08-19
 updatedDate: 2026-08-24
-category: "리팩토링"
+category: "코드 품질"
 tags: ["기본개념", "리팩토링", "Kotlin"]
 ---
 

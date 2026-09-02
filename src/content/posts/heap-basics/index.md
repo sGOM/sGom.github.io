@@ -3,7 +3,7 @@ title: 힙(Heap) — 배열 하나로 우선순위를 유지하는 원리
 description: min-heap을 배열로 표현하는 방식과 push·pop이 sift-up·sift-down으로 힙 속성을 지키는 과정을 정리한다
 pubDate: 2026-08-13
 updatedDate: 2026-08-24
-category: "자료구조"
+category: "컴퓨터공학"
 tags: ["기본개념", "자료구조", "Python"]
 ---
 

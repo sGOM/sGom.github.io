@@ -2,7 +2,7 @@
 title: ByteBuffer의 flip은 왜 필요한가
 description: 하나의 버퍼가 읽기와 쓰기를 겸하는 방식과, heap 버퍼와 direct 버퍼의 차이
 pubDate: 2026-08-25
-category: "JAVA"
+category: "Java"
 tags: ["파고들기", "Java", "IO", "버퍼"]
 ---
 

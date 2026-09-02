@@ -3,7 +3,7 @@ title: JVM 기본개념 — 클래스 로딩부터 메모리 구조, 실행 엔�
 description: 자바 프로그램이 실행되는 과정을 클래스 로딩, 런타임 메모리 영역, 실행 엔진 세 부분으로 정리한다
 pubDate: 2026-08-14
 updatedDate: 2026-08-24
-category: "JAVA"
+category: "Java"
 tags: ["기본개념", "JVM", "Java"]
 ---
 

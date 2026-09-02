@@ -2,7 +2,7 @@
 title: 버퍼 — 속도가 다른 두 쪽을 잇는 방법
 description: 자바 I/O, DB 버퍼 풀, ByteBuffer, 소켓 버퍼에서 반복되는 공통 구조와 그 대가
 pubDate: 2026-08-25
-category: "IO"
+category: "컴퓨터공학"
 tags: ["기본개념", "IO", "버퍼"]
 ---
 

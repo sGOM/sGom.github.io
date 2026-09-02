@@ -2,7 +2,7 @@
 title: 자바 직렬화 스트림을 바이트 단위로 뜯어보기
 description: 71바이트짜리 직렬화 파일을 바이트별로 해부하고, 필드를 하나도 건드리지 않고 게터만 추가해도 serialVersionUID가 바뀌어 역직렬화가 깨지는 것을 JDK 26에서 재현한다
 pubDate: 2026-08-31
-category: "JAVA"
+category: "Java"
 tags: ["파고들기", "Java", "직렬화"]
 ---
 

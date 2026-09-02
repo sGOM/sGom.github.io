@@ -3,7 +3,7 @@ title: git worktree로 브랜치를 디렉터리째 나눠 쓰기
 description: 저장소 하나에서 여러 브랜치를 각각의 디렉터리에 동시에 체크아웃하는 git worktree의 명령과 동작을 정리하고, 에이전트를 여러 개 돌릴 때의 쓸모까지 짚는다
 pubDate: 2026-08-20
 updatedDate: 2026-08-24
-category: "GIT"
+category: "개발도구"
 tags: ["기본개념", "Git", "브랜치", "워크트리"]
 ---
 

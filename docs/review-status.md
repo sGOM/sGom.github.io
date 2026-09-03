@@ -58,3 +58,4 @@
 - [ ] [트랜잭션 격리 수준은 DBMS마다 다르게 동작한다](../src/content/posts/transaction-isolation-levels/index.md)
 - [ ] [@Transactional 전파 속성 7가지](../src/content/posts/transaction-propagation-types/index.md)
 - [ ] [힙(Heap) — 배열 하나로 우선순위를 유지하는 원리](../src/content/posts/heap-basics/index.md)
+- [ ] [git은 변경된 줄을 저장하지 않는다 — 스냅샷에서 hunk가 나오기까지](../src/content/posts/git-diff-line-tracking/index.md)

@@ -11,7 +11,7 @@ tags: ["파고들기", "Database", "JDBC", "MySQL"]
 
 [MyBatis의 #{}와 ${} — 바인딩과 문자열 치환](/posts/mybatis-parameter-binding/)에서 `#{}`는 `?`를 만들고 값은 따로 넘긴다는 데까지 봤다. 이 글은 그 `?`를 넘겨받은 JDBC 드라이버가 무엇을 하는지 확인한다.
 
-## 왜 필요한가
+## 풀리지 않는 질문
 
 `#{}`가 안전한 이유를 "값이 SQL 문장과 분리되어 전달되기 때문"이라고 설명하는 글이 많다. 그런데 MySQL Connector/J는 기본 설정에서 서버 사이드 prepare를 쓰지 않는다. `useServerPrepStmts`의 기본값이 `false`다. ([Connector/J — Prepared Statements 설정](https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-prepared-statements.html))
 

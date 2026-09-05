@@ -35,7 +35,7 @@ tags: ["기본개념", "POSIX", "Git"]
 
 ## 항목별 설명
 
-구분자로 보는 관점에서는 `a\nb\nc`가 세 줄이다. 개행 두 개가 세 덩어리를 가른다. POSIX는 그렇게 세지 않는다. 종결자가 붙은 `a`와 `b`만 줄이고, 남은 `c`는 incomplete line이다.
+구분자로 보는 관점에서는 `a\nb\nc`가 세 줄이다. 개행 두 개가 세 덩어리를 가른다. 그러나 POSIX는 그렇게 세지 않는다. 종결자가 붙은 `a`와 `b`만 줄이고, 남은 `c`는 incomplete line이다.
 
 incomplete line은 줄이 되지 못한 나머지에 붙은 이름이다. 그래서 `c`를 줄로 만들려면 `c`를 지우고 `c\n`을 새로 넣어야 한다. 위 diff가 삭제 한 줄과 추가 한 줄로 나온 이유다.
 
@@ -63,7 +63,7 @@ $ wc -l good.txt bad.txt
  5 total
 ```
 
-`bad.txt`에도 `c`는 분명히 있지만 `wc`는 줄로 세지 않는다. POSIX가 [wc](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/wc.html)의 `-l`을 "각 입력 파일의 개행 문자 수"로 규정하고 있어서, 이 결과는 규격대로 동작한 것이다.
+`bad.txt`에도 `c`는 분명히 있지만 `wc`는 줄로 세지 않는다. POSIX가 [wc](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/wc.html)의 `-l`을 각 입력 파일의 개행 문자 수로 규정하고 있어서, 이 결과는 규격대로 동작한 것이다.
 
 git도 같은 기준으로 파일을 읽는다. 개행 없는 파일에 줄을 하나 덧붙이면, 새 줄과 함께 기존 마지막 줄까지 바뀐 것으로 잡힌다.
 
@@ -89,11 +89,19 @@ git도 같은 기준으로 파일을 읽는다. 개행 없는 파일에 줄을 �
 
 ## 혼동하기 쉬운 것
 
-**`\ No newline at end of file`은 POSIX 규격이 아니다.** [POSIX의 diff 규격](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/diff.html)에는 이 문구가 없다. GNU diffutils가 "불완전한 줄은 `\`로 시작하는 다음 줄로 구분한다"는 [관례](https://www.gnu.org/software/diffutils/manual/html_node/Incomplete-Lines.html)를 만들었고, git이 그 형식을 따르고, GitHub도 같은 표기를 그대로 보여준다.
+**`\ No newline at end of file`은 POSIX 규격이 아니라 GNU 관례다.** [POSIX의 diff 규격](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/diff.html)에 이 문구는 없다. 불완전한 줄 뒤에 `\`로 시작하는 줄을 붙여 표시하는 [GNU diffutils의 관례](https://www.gnu.org/software/diffutils/manual/html_node/Incomplete-Lines.html)를 git이 따르고, GitHub도 그대로 보여준다. 파일에 들어 있는 내용이 아니라 diff 출력에만 붙는 표시다.
 
-**C 표준은 소스 파일과 실행 중의 스트림을 다르게 규정한다.** 소스 파일은 [C11 5.1.1.2](https://port70.net/~nsz/c/c11/n1570.html#5.1.1.2)가 "A source file that is not empty shall end in a new-line character"로 개행을 요구한다. 실행 중의 텍스트 스트림을 다루는 [7.21.2](https://port70.net/~nsz/c/c11/n1570.html#7.21.2)는 마지막 줄에도 개행이 필요한지를 "implementation-defined"로 남겼다. 개행 없이 끝나는 소스 파일을 컴파일러가 대체로 그냥 받아주지만, 규격이 허용해서는 아니다. `shall` 위반은 미정의 동작이라 진단 없이 통과시켜도 되기 때문이다.
+**C 표준은 소스 파일과 텍스트 스트림에 서로 다른 규칙을 둔다.** [C11 5.1.1.2](https://port70.net/~nsz/c/c11/n1570.html#5.1.1.2)는 소스 파일에 개행을 요구한다.
 
-**빈 파일과 개행 하나뿐인 파일은 다르다.** 앞은 0줄, 뒤는 empty line 하나로 1줄이다.
+> A source file that is not empty shall end in a new-line character, which shall not be immediately preceded by a backslash character before any such splicing takes place.
+
+실행 중에 읽고 쓰는 텍스트 스트림을 다루는 [7.21.2](https://port70.net/~nsz/c/c11/n1570.html#7.21.2)는 같은 것을 구현에 맡긴다.
+
+> Whether the last line requires a terminating new-line character is implementation-defined.
+
+그래서 개행 없이 끝나는 `.c` 파일은 규격 위반이지만 컴파일러는 대체로 받아준다. 이 `shall`은 제약(constraint) 밖에 있어 위반의 결과가 미정의 동작이고, 미정의 동작에는 진단 의무가 없기 때문이다.
+
+**빈 파일과 개행 하나뿐인 파일은 다르다.** 빈 파일은 문자가 없으니 줄도 0개다. 개행 하나뿐인 파일은 non-\<newline\> 문자 0개에 종결자가 붙은 형태라 empty line 하나, 즉 1줄이다. `wc`의 두 결과가 갈리는 지점이다.
 
 ```console
 $ : > empty.txt

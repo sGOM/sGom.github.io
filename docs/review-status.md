@@ -47,6 +47,7 @@
 - [ ] [ByteBuffer의 flip은 왜 필요한가](../src/content/posts/java-nio-bytebuffer/index.md)
 - [ ] [소켓 버퍼 — write가 리턴했다고 상대가 받은 것은 아니다](../src/content/posts/socket-buffer/index.md)
 - [ ] [대역폭은 왜 정보량인가 — 주파수를 나누는 이유와 나눈 대가](../src/content/posts/bandwidth-and-spectrum-division/index.md)
+- [ ] [double의 52비트, bias 1023, 17자리는 어디서 나오는가](../src/content/posts/ieee754-double-numbers/index.md)
 - [ ] [자바 직렬화 스트림을 바이트 단위로 뜯어보기](../src/content/posts/serialization-deep-dive/index.md)
 - [ ] [JVM GC 파고들기 — 컬렉터마다 다르게 도는 이유](../src/content/posts/jvm-gc/index.md)
 - [ ] [Kotlin 프로퍼티가 여러 JVM 요소로 컴파일되는 이유](../src/content/posts/kotlin-annotation-use-site-target-deep-dive/index.md)

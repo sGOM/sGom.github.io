@@ -2,6 +2,7 @@
 title: "부동소수점 — 0.1 + 0.2가 0.3이 아닌 이유"
 description: "double이 십진 소수를 어떻게 저장하는지, 왜 오차가 생기는지, 비교와 금액 계산에서 무엇을 조심해야 하는지 정리한다."
 pubDate: 2026-08-24
+updatedDate: 2026-09-05
 category: "컴퓨터공학"
 tags: ["기본개념", "부동소수점", "IEEE754", "Java"]
 ---
@@ -15,7 +16,7 @@ System.out.println(0.1 + 0.2);        // 0.30000000000000004
 System.out.println(0.1 + 0.2 == 0.3); // false
 ```
 
-JVM 버그가 아니다. `double`은 [IEEE 754](https://ko.wikipedia.org/wiki/IEEE_754) 규격을 따르고, 규격대로 계산한 결과가 저것이다. 십진 소수 `0.1`을 이진수로 정확히 적을 수 없기 때문에 생긴다.
+JVM 버그가 아니다. `double`은 [IEEE 754](https://ko.wikipedia.org/wiki/IEEE_754) 규격을 따르고, 규격대로 계산한 결과가 저것이다. 십진 소수 `0.1`을 유한한 길이의 이진 분수로 적을 수 없기 때문에 생긴다.
 
 ## 핵심 정리
 
@@ -28,15 +29,11 @@ JVM 버그가 아니다. `double`은 [IEEE 754](https://ko.wikipedia.org/wiki/IE
 | 가수(저장) | 23비트 | 52비트 |
 | 가수(유효) | 24비트 | 53비트 |
 | 지수 bias | 127 | 1023 |
-| 왕복 보장 십진 자릿수 | 6자리 | 15자리 |
-| 값을 특정하는 데 필요한 자릿수 | 9자리 | 17자리 |
-| 연속 정수를 정확히 세는 한계 | 2^24 = 16,777,216 | 2^53 = 9,007,199,254,740,992 |
+| 십진 → 실수형 → 십진 변환에서<br>원래 숫자가 그대로 돌아오는 자릿수 | 6자리 | 15자리 |
+| 실수형 → 십진 → 실수형 변환에서<br>같은 값으로 돌아오려면 필요한 자릿수 | 9자리 | 17자리 |
+| 1씩 늘어나는 정수를<br>빠짐없이 담을 수 있는 상한 | 2^24 = 16,777,216 | 2^53 = 9,007,199,254,740,992 |
 
-가수가 24비트, 53비트인데 저장은 하나 적은 이유는 맨 앞 `1`을 적지 않기 때문이다. 정규화하면 항상 `1.xxx` 꼴이므로 그 `1`은 저장하지 않고, 규격이 항상 있는 것으로 정한다.
-
-지수 필드가 전부 0이거나 전부 1이면 이 공식이 적용되지 않는다. 전부 0이면 앞자리를 `0.`으로 읽는 [비정규수](https://en.wikipedia.org/wiki/Subnormal_number)이고, 전부 1이면 `Infinity`나 `NaN`이다.
-
-"왕복 보장"과 "값을 특정"은 다른 값이다. 유효숫자 15자리짜리 십진수는 `double`로 넣었다 빼도 그대로 돌아온다. 반대로 임의의 `double` 하나를 다른 `double`과 구별되게 십진수로 적으려면 17자리가 필요하다.
+가수 비트 수, 지수 bias, 왕복 자릿수가 어디서 나오는지는 [double의 52비트, bias 1023, 17자리는 어디서 나오는가](/posts/ieee754-double-numbers/)에서 유도한다.
 
 ### 이진 분수로 못 적는 수
 
@@ -47,6 +44,29 @@ JVM 버그가 아니다. `double`은 [IEEE 754](https://ko.wikipedia.org/wiki/IE
 ```
 
 유효 53비트에서 반올림한 값이 저장된다. `0.2`도, `0.3`도 마찬가지다. 셋 다 조금씩 어긋난 값이라 더한 결과가 맞아떨어지지 않는다.
+
+### 이진수가 문제인 것은 아니다
+
+못 적는 것은 이진수가 아니라 **밑이 2인 지수**다. 같은 `0.1`을 두 방식으로 적어 보면 갈리는 지점이 보인다.
+
+```
+밑이 2   0.1 = 1.1001100110011001100... × 2^-4   ← 끝나지 않는다
+밑이 10  0.1 = 1 × 10^-1                         ← 정수 1과 지수 -1로 끝난다
+```
+
+PostgreSQL의 [`NUMERIC`](https://www.postgresql.org/docs/16/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL)과 Java의 `BigDecimal`이 아래쪽 방식이다. 정수 하나와 10의 거듭제곱 지수를 따로 저장한다. `BigDecimal`에서는 앞을 unscaled value, 뒤를 scale이라 부르고 꺼내 볼 수 있다.
+
+```java
+BigDecimal d = new BigDecimal("0.1");
+System.out.println(d.unscaledValue()); // 1
+System.out.println(d.scale());         // 1   → 1 × 10^-1
+```
+
+정수 `1`은 이진 비트 그대로 담긴다. `BigDecimal`은 `BigInteger`로, `NUMERIC`은 십진 4자리 묶음으로 담는 차이가 있을 뿐, 저장 매체는 `double`과 똑같은 이진 비트다. 달라진 것은 지수의 밑뿐이다.
+
+공짜는 아니다. `double`은 64비트 고정이고 덧셈 한 번이 CPU 명령 하나로 끝나지만, `NUMERIC`과 `BigDecimal`은 자릿수만큼 길이가 늘고 연산을 소프트웨어로 처리한다. 밑을 바꾼 것뿐이라 `1/3`처럼 십진법으로도 끝나지 않는 수는 여전히 못 담는다.
+
+`NUMERIC`과 `double precision`의 실제 차이는 [PostgreSQL numeric과 double precision](/posts/postgresql-numeric-vs-double/)에서 다룬다.
 
 ## 예시
 
@@ -70,33 +90,16 @@ System.out.println(new BigDecimal(0.1 + 0.2));
 같은 `BigDecimal`이라도 생성 방법에 따라 결과가 갈린다.
 
 ```java
-new BigDecimal(0.1)         // 0.1000000000000000055511151231257827021181583404541015625
-BigDecimal.valueOf(0.1)     // 0.1
-new BigDecimal("0.1")       // 0.1
+new BigDecimal(0.03)        // 0.0299999999999999988897769753748434595763683319091796875
+BigDecimal.valueOf(0.03)    // 0.03
+new BigDecimal("0.03")      // 0.03
 ```
 
-`new BigDecimal(0.1)`은 이미 오차가 낀 `double`을 받아 그 오차까지 옮긴다. `valueOf`는 위의 `Double.toString`을 거치고, 문자열 생성자는 십진수를 그대로 읽는다. [javadoc이 문자열 생성자를 권한다](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html#%3Cinit%3E(double)).
+`new BigDecimal(0.03)`은 이미 오차가 낀 `double`을 받아 그 오차까지 옮긴다. `valueOf`는 위의 `Double.toString`을 거치고, 문자열 생성자는 십진수를 그대로 읽는다. javadoc도 문자열 생성자를 권한다.
 
-### 비트 배치
-
-```java
-static String bits(double d) {
-    String s = Long.toBinaryString(Double.doubleToLongBits(d));
-    s = "0".repeat(64 - s.length()) + s;
-    return s.charAt(0) + " " + s.substring(1, 12) + " " + s.substring(12);
-}
-```
-
-```
-bits(1.0)  0 01111111111 0000000000000000000000000000000000000000000000000000
-bits(-1.0) 1 01111111111 0000000000000000000000000000000000000000000000000000
-bits(0.5)  0 01111111110 0000000000000000000000000000000000000000000000000000
-bits(0.1)  0 01111111011 1001100110011001100110011001100110011001100110011010
-```
-
-`1.0`의 지수 필드는 `01111111111` = 1023이다. 1023 - 1023 = 0이므로 `1.0 × 2^0`이다. `0.5`는 1022 - 1023 = -1, `0.1`은 1019 - 1023 = -4다. 가수 `1001100110011...`은 `1001`이 반복되다가 끝에서 `1010`으로 올림됐다. 이 올림이 오차의 정체다.
-
-`0.5`와 `1.0`의 가수는 전부 0이다. 2의 거듭제곱이라 오차가 없다.
+> Therefore, it is generally recommended that the String constructor be used in preference to this one.
+>
+> — [`BigDecimal(double)` javadoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html#%3Cinit%3E(double))
 
 ### 2의 거듭제곱은 정확하다
 
@@ -169,6 +172,12 @@ System.out.println(Double.compare(Double.NaN, Double.NaN));              // 0
 System.out.println(Double.compare(0.0, -0.0));                           // 1
 ```
 
+셋이 지키는 규칙이 다르다. `==`는 IEEE 754를 따른다. [JLS 15.21.1](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.21.1)은 피연산자 중 하나라도 `NaN`이면 `==`가 `false`, `!=`가 `true`라고 못박고, `0.0`과 `-0.0`은 수치적으로 같은 0이므로 같다고 답한다.
+
+`equals`와 `compare`는 컬렉션의 계약을 따른다. `HashMap`은 넣은 키를 다시 찾을 수 있어야 하고 `TreeMap`은 [전순서](https://ko.wikipedia.org/wiki/전순서_집합)를 요구하는데, `NaN != NaN`이면 넣은 키를 영영 못 찾고 정렬도 깨진다. 그래서 자기 자신과 같다고 보고, 대신 비트 패턴이 다른 `0.0`과 `-0.0`을 갈라 `-0.0 < 0.0`으로 순서를 매긴다. 수치 계산의 정답보다 자료구조가 망가지지 않는 쪽을 택한 것이고, [`Double.equals` javadoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Double.html#equals(java.lang.Object))이 그 의도를 직접 밝힌다.
+
+> This definition allows hash tables to operate properly.
+
 `HashSet`과 `HashMap`은 `equals`를, `TreeMap`과 정렬은 `compare`를 쓴다. `NaN`을 `HashSet`에 두 번 넣으면 하나만 남지만, `==`로 짠 중복 검사에서는 걸러지지 않는다. `0.0`과 `-0.0`은 반대로 `==`에서 같고 `HashSet`에서 다르다.
 
 ### 정수라고 안전하지 않다
@@ -196,6 +205,15 @@ System.out.println(Math.ulp(1e16));   // 2.0
 
 `==` 대신 오차 허용 범위를 두고 비교한다. 이때 `1e-9` 같은 고정값을 쓰면 큰 수에서 무너진다.
 
+`double`이 표현할 수 있는 값은 수직선 위에 띄엄띄엄 놓여 있고, 값이 커질수록 간격도 벌어진다. 이 간격을 다루는 메서드가 둘 있다.
+
+| 메서드 | 하는 일 |
+|---|---|
+| [`Math.nextUp(x)`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#nextUp(double)) | `x` 바로 다음 `double`. 사이에 표현 가능한 값이 없는 한 칸 옆이다 |
+| [`Math.ulp(x)`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#ulp(double)) | `x`와 그 한 칸 옆 사이의 거리(unit in the last place). 양수 `x`에서는 `nextUp(x) - x`와 같다 |
+
+`1.0` 근처에서 `ulp`는 `2.22e-16`이지만 `1e17` 근처에서는 16이다. 같은 "한 칸"이 자릿수에 따라 이만큼 달라진다.
+
 ```java
 double x = 1e17;
 double y = Math.nextUp(Math.nextUp(Math.nextUp(1e17))); // 세 칸 옆 double
@@ -206,7 +224,9 @@ System.out.println(Math.ulp(x));                  // 16.0
 System.out.println(Math.abs(x - y) <= Math.ulp(x) * 4); // true
 ```
 
-`1e17` 근처에서는 이웃한 `double` 사이 간격이 이미 16이다. 표현할 수 있는 값이 세 칸밖에 차이 나지 않는데도 고정 오차 `1e-9`는 "다르다"고 답한다. 곱한 `4`는 몇 번의 연산을 거쳤는지에 맞춰 잡는 값이다. 연산 한 번마다 최대 0.5 ulp가 붙으므로, 허용할 연산 횟수를 넘겨준다고 보면 된다. 허용 범위는 비교 대상의 크기에 맞춰 잡아야 하고, [`Math.ulp`](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#ulp(double))가 그 크기에서의 최소 간격을 알려준다.
+`1e17` 근처에서는 이웃한 `double` 사이 간격이 이미 16이다. 표현할 수 있는 값이 세 칸밖에 차이 나지 않는데도 고정 오차 `1e-9`는 "다르다"고 답한다. 곱한 `4`는 몇 번의 연산을 거쳤는지에 맞춰 잡는 값이다. 연산 한 번마다 최대 0.5 ulp가 붙으므로 대략 연산 횟수의 절반이고, `4`는 여덟 번쯤에 해당한다. 허용 범위는 비교 대상의 크기에 맞춰 잡아야 하고, `Math.ulp`가 그 크기에서의 최소 간격을 알려준다.
+
+단 0 근처에서는 이 방식이 무너진다. `Math.ulp(0.0)`은 `4.9E-324`라 `Math.abs(x) <= Math.ulp(0.0) * 4`는 사실상 `x == 0`이다. 0과 비교할 때는 절대 허용치를 따로 둔다.
 
 ## 참고
 

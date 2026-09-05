@@ -19,8 +19,10 @@ docker compose -f experiments/compose.yml exec -T postgres psql -U postgres < ex
 
 # MySQL
 docker compose -f experiments/compose.yml up -d mysql
-docker compose -f experiments/compose.yml exec -T mysql mysql -uroot -plab < experiments/<슬러그>/setup.sql
+docker compose -f experiments/compose.yml exec -T mysql mysql -uroot -plab --default-character-set=utf8mb4 --table < experiments/<슬러그>/setup.sql
 ```
+
+MySQL은 `--default-character-set=utf8mb4`를 빠뜨리면 한국어가 깨진 채 색인된다. `--table`은 psql처럼 표로 출력한다.
 
 호스트 포트는 기본값을 비켜 쓴다. PostgreSQL `5433`, MySQL `3307`. 로컬에 같은 DB가 설치돼 있어도 충돌하지 않는다.
 
@@ -29,6 +31,9 @@ docker compose -f experiments/compose.yml exec -T mysql mysql -uroot -plab < exp
 **스크립트 하나만 돌려서 결과가 재현돼야 한다.** 이 저장소를 받은 사람이 같은 명령으로 같은 숫자를 봐야 한다.
 
 1. `DROP DATABASE IF EXISTS <슬러그>;` / `CREATE DATABASE <슬러그>;` 로 시작한다. 슬러그는 글 디렉터리 이름과 맞춘다.
+   **MySQL만 예외로 하이픈을 밑줄로 바꾼다.** InnoDB FULLTEXT를 들여다보는 실험에서 `innodb_ft_aux_table`이
+   DB 이름을 디렉터리 이름으로 인코딩해 찾는데, 하이픈이 든 이름을 거부한다. `inverted-index-basics` →
+   `inverted_index_basics`. 나머지는 그대로 슬러그를 쓴다.
 2. 스키마·시드 데이터·`ANALYZE`까지 스크립트 안에 전부 넣는다. 남아 있는 상태에 기대지 않는다.
 3. 랜덤이 필요하면 고정한다. PostgreSQL은 `SELECT setseed(0.42);`, MySQL은 `RAND(42)`.
 4. 버전에 결과가 달리면 스크립트 첫머리에 `SELECT version();`을 넣어 출력에 남긴다.

@@ -1,0 +1,30 @@
+# 블로그 글 실험용 상시 DB 랩.
+# 서버는 재사용하고 데이터는 재사용하지 않는다. 실험마다 자기 DB를 만들고 지운다.
+# 사용법은 README.md 참고.
+
+services:
+  postgres:
+    image: postgres:16.15
+    container_name: blog-lab-postgres
+    environment:
+      POSTGRES_PASSWORD: lab
+    ports:
+      - "5433:5432"   # 로컬 설치와 충돌하지 않도록 기본 포트를 비켜 쓴다
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4.11
+    container_name: blog-lab-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: lab
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  mysqldata:

@@ -11,7 +11,7 @@ tags: ["파고들기", "Kotlin", "애노테이션", "바이트코드"]
 
 use-site target 종류와 언제 어떤 걸 쓰는지는 [Kotlin 애노테이션 use-site target](/posts/kotlin-annotation-use-site-target/)에서 표로 정리했다. 타깃을 안 쓰면 컴파일러가 `param` → `property` → `field` 순으로 첫 번째 적용 가능한 타깃을 고른다는 것도 그 글에서 다뤘다.
 
-## 왜 필요한가
+## 풀리지 않는 질문
 
 `property`로 간다는 게 정확히 무슨 뜻인지가 남는다. Kotlin 프로퍼티는 JVM 스펙에 없는 개념이라, 클래스 파일에 "프로퍼티"라는 요소 자체가 없다.
 

@@ -6,7 +6,7 @@ category: "데이터베이스"
 tags: ["기본개념", "Database", "PostgreSQL"]
 ---
 
-## 왜 필요한가
+## 무엇이 문제인가
 
 인덱스를 걸었는데 실행계획에 Seq Scan이 나오는 경우가 있다. 반대로 Index Scan이 나오는데도 기대만큼 빨라지지 않는 경우도 있다.
 

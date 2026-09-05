@@ -7,7 +7,7 @@ category: "Spring"
 tags: ["기본개념", "Spring", "AOP"]
 ---
 
-## 왜 필요한가
+## 무엇이 문제인가
 
 `@Transactional`, `@Async`, `@Cacheable`은 메서드 본문을 건드리지 않고 동작을 바꾼다. 이 일이 어디서 일어나는지 모르면, 어노테이션이 조용히 무시되는 상황을 설명할 수 없다.
 

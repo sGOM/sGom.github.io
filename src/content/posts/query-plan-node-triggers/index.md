@@ -7,7 +7,7 @@ category: "데이터베이스"
 tags: ["기본개념", "Database", "PostgreSQL"]
 ---
 
-## 왜 필요한가
+## 풀리지 않는 질문
 
 [실행계획 읽기 — 스캔, 조인, rows와 loops](/posts/query-plan-basics/)에서 각 노드가 하는 일과 `cost`·`rows`·`loops` 표기의 의미를 정리했다.
 

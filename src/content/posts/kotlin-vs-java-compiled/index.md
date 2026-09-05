@@ -10,7 +10,7 @@ tags: ["파고들기", "Kotlin", "Java", "바이트코드"]
 
 Kotlin 프로퍼티 하나가 backing field, getter, setter로 갈라지는 규칙은 [Kotlin 프로퍼티가 여러 JVM 요소로 컴파일되는 이유](/posts/kotlin-annotation-use-site-target-deep-dive/)에서 다뤘다. 이 글은 그 위에서 문법 단위 네 가지를 Java 등가 코드와 나란히 컴파일해 비교한다.
 
-## 왜 필요한가
+## 풀리지 않는 질문
 
 Kotlin과 Java는 같은 형식의 클래스 파일로 컴파일되고 서로 호출된다. 그런데 Kotlin에는 Java 문법으로 그대로 옮길 수 없는 것이 있다. `String`과 `String?`의 구분, 파라미터 기본값, `data class`, `object`가 그렇다.
 

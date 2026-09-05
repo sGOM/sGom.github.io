@@ -6,7 +6,7 @@ category: "개발도구"
 tags: ["기본개념", "Git", "브랜치", "병합"]
 ---
 
-## 왜 필요한가
+## 무엇이 문제인가
 
 `git merge feature`를 두 번 실행해도 히스토리 모양이 다르게 남는다. 어제는 커밋이 하나도 늘지 않았는데 오늘은 `Merge branch 'feature'` 커밋이 생긴다. 팀에서 `--no-ff`를 쓰라고 했는데 왜 쓰는지는 설명이 없고, `--ff-only`를 걸어 두면 어떤 날은 `fatal: Not possible to fast-forward, aborting.`로 막힌다.
 

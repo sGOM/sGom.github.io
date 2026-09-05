@@ -7,7 +7,7 @@ category: "Spring"
 tags: ["기본개념", "Spring", "Spring Boot"]
 ---
 
-## 왜 필요한가
+## 왜 헷갈리는가
 
 "Spring으로 만들까 Spring Boot로 만들까"라는 질문은 성립하지 않는다. 둘은 고르는 대상이 아니다. Boot로 만든 애플리케이션도 결국 Spring Framework의 `ApplicationContext`를 띄우고, 그 안에서 빈을 주입받는다.
 

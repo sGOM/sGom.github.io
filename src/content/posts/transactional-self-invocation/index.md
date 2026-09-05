@@ -11,7 +11,7 @@ category: "Spring"
 
 [Spring AOP 프록시](/posts/spring-aop-proxy/)에서 정리한 프록시 구조와 JDK·CGLIB의 차이를 알고 있다고 보고 출발한다.
 
-## 왜 필요한가
+## 무엇이 문제인가
 
 `@Transactional`을 분명히 붙였는데 저장한 데이터가 롤백되지 않는 상황이 있다. 어노테이션은 코드에 그대로 있어 눈으로는 원인이 드러나지 않는다.
 

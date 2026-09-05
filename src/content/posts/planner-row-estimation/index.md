@@ -11,7 +11,7 @@ tags: ["파고들기", "Database", "PostgreSQL", "테스트"]
 
 [실행계획 읽기 — 스캔, 조인, rows와 loops](/posts/query-plan-basics/)에서 정리한 `rows`·`actual rows`·`loops`의 의미를 알고 있다고 보고 출발한다.
 
-## 왜 필요한가
+## 풀리지 않는 질문
 
 "통계가 오래돼서 플랜이 나빠졌다"는 설명은 흔하다. 그런데 왜 하필 **1**로 추정되는지, 왜 그 1이 하필 **Nested Loop**을 부르는지까지는 잘 이어지지 않는다.
 

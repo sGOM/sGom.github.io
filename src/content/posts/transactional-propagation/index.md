@@ -11,7 +11,7 @@ category: "Spring"
 
 [@Transactional 전파 속성 7가지](/posts/transaction-propagation-types/)에서 정리한 전파 속성의 정의와 기본 롤백 규칙을 알고 있다고 보고 출발한다.
 
-## 왜 필요한가
+## 무엇이 문제인가
 
 안쪽 메서드에서 발생한 예외를 바깥에서 try-catch로 잡았는데도, 최종 커밋 시점에 `UnexpectedRollbackException`이 나며 전체가 실패하는 경우가 있다. 예외를 분명히 처리했는데 롤백되므로 코드만 봐서는 이유가 드러나지 않는다.
 

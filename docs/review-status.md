@@ -9,7 +9,7 @@
 - [V] [부동소수점 — 0.1 + 0.2가 0.3이 아닌 이유](../src/content/posts/floating-point-basics/index.md)
 - [V] [버퍼 — 속도가 다른 두 쪽을 잇는 방법](../src/content/posts/buffer-overview/index.md)
 - [V] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)
-- [ ] [JSON — 정의와 널리 쓰이게 된 과정](../src/content/posts/json-basics/index.md)
+- [V] [JSON — 정의와 널리 쓰이게 된 과정](../src/content/posts/json-basics/index.md)
 - [ ] [힙(Heap) — 배열 하나로 우선순위를 유지하는 원리](../src/content/posts/heap-basics/index.md)
 - [ ] [리팩토링의 경계 — 무엇까지가 리팩토링인가](../src/content/posts/refactoring-basics/index.md)
 - [ ] [환경 변수는 누가 물려주고 어디에 남는가](../src/content/posts/environment-variables/index.md)

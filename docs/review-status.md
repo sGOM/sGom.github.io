@@ -36,7 +36,7 @@
 - [ ] [Spring AOP 프록시](../src/content/posts/spring-aop-proxy/index.md)
 - [ ] [@Transactional 전파 속성 7가지](../src/content/posts/transaction-propagation-types/index.md)
 - [ ] [데드락 대응 기법 — Coffman 4조건과 그 대가](../src/content/posts/deadlock-prevention/index.md)
-- [ ] [같은 JSON, 다른 값 — 명세가 파서에 남긴 자리](../src/content/posts/json-parser-differences/index.md)
+- [V] [같은 JSON, 다른 값 — 명세가 파서에 남긴 자리](../src/content/posts/json-parser-differences/index.md)
 - [ ] [Kotlin List.contains를 Set으로 바꾸면 빨라지는 이유](../src/content/posts/kotlin-list-contains-vs-set-contains/index.md)
 - [ ] [Kotlin과 Java의 차이는 컴파일하면 어디에 남는가](../src/content/posts/kotlin-vs-java-compiled/index.md)
 - [ ] [ByteBuffer의 flip은 왜 필요한가](../src/content/posts/java-nio-bytebuffer/index.md)

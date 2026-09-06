@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 470" font-family="-apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif">
+  <rect x="10" y="10" width="860" height="450" rx="16" fill="#f6f8fa" stroke="#e5e5e5" />
+  <text x="440" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">heapify가 O(n)인 이유</text>
+  <text x="440" y="62" text-anchor="middle" font-size="11" fill="#6b6b6b">노드가 많은 레벨일수록 내려갈 거리가 짧다 — 원소 15개 기준</text>
+
+  <!-- tree panel -->
+  <rect x="30" y="80" width="440" height="300" rx="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5" />
+  <text x="250" y="104" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">완전 이진 트리 15개</text>
+
+  <!-- edges: level0 -> level1 -->
+  <line x1="233" y1="130" x2="137" y2="195" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="233" y1="130" x2="329" y2="195" stroke="#c8c8c8" stroke-width="1.5" />
+  <!-- edges: level1 -> level2 -->
+  <line x1="137" y1="195" x2="89" y2="260" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="137" y1="195" x2="185" y2="260" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="329" y1="195" x2="281" y2="260" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="329" y1="195" x2="377" y2="260" stroke="#c8c8c8" stroke-width="1.5" />
+  <!-- edges: level2 -> level3 -->
+  <line x1="89" y1="260" x2="65" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="89" y1="260" x2="113" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="185" y1="260" x2="161" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="185" y1="260" x2="209" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="281" y1="260" x2="257" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="281" y1="260" x2="305" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="377" y1="260" x2="353" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+  <line x1="377" y1="260" x2="401" y2="325" stroke="#c8c8c8" stroke-width="1.5" />
+
+  <!-- nodes -->
+  <circle cx="233" cy="130" r="13" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="137" cy="195" r="13" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="329" cy="195" r="13" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="89" cy="260" r="11" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="185" cy="260" r="11" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="281" cy="260" r="11" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="377" cy="260" r="11" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <circle cx="65" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="113" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="161" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="209" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="257" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="305" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="353" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+  <circle cx="401" cy="325" r="9" fill="#ffffff" stroke="#9aa4b2" stroke-width="1.5" />
+
+  <text x="440" y="130" text-anchor="end" font-size="10" fill="#6b6b6b">sift-down 시작</text>
+  <text x="440" y="358" text-anchor="end" font-size="10" fill="#6b6b6b">리프 — sift-down 대상이 아니다</text>
+
+  <!-- table panel -->
+  <rect x="490" y="80" width="360" height="300" rx="12" fill="#ffffff" stroke="#e5e5e5" stroke-width="1.5" />
+  <text x="520" y="104" font-size="10.5" fill="#6b6b6b">레벨</text>
+  <text x="670" y="104" text-anchor="middle" font-size="10.5" fill="#6b6b6b">노드 수 × 내려갈 최대 거리</text>
+  <text x="820" y="104" text-anchor="end" font-size="10.5" fill="#6b6b6b">이동</text>
+  <line x1="510" y1="112" x2="830" y2="112" stroke="#e5e5e5" stroke-width="1" />
+
+  <text x="520" y="134" font-size="12" fill="#1a1a1a">0</text>
+  <text x="670" y="134" text-anchor="middle" font-size="12" fill="#1a1a1a">1개 × 3칸</text>
+  <text x="820" y="134" text-anchor="end" font-size="12" font-weight="700" fill="#2563eb">3</text>
+
+  <text x="520" y="199" font-size="12" fill="#1a1a1a">1</text>
+  <text x="670" y="199" text-anchor="middle" font-size="12" fill="#1a1a1a">2개 × 2칸</text>
+  <text x="820" y="199" text-anchor="end" font-size="12" font-weight="700" fill="#2563eb">4</text>
+
+  <text x="520" y="264" font-size="12" fill="#1a1a1a">2</text>
+  <text x="670" y="264" text-anchor="middle" font-size="12" fill="#1a1a1a">4개 × 1칸</text>
+  <text x="820" y="264" text-anchor="end" font-size="12" font-weight="700" fill="#2563eb">4</text>
+
+  <text x="520" y="329" font-size="12" fill="#6b6b6b">3</text>
+  <text x="670" y="329" text-anchor="middle" font-size="12" fill="#6b6b6b">8개 × 0칸</text>
+  <text x="820" y="329" text-anchor="end" font-size="12" font-weight="700" fill="#6b6b6b">0</text>
+
+  <line x1="510" y1="346" x2="830" y2="346" stroke="#e5e5e5" stroke-width="1" />
+  <text x="520" y="366" font-size="12" font-weight="700" fill="#1a1a1a">합계</text>
+  <text x="670" y="366" text-anchor="middle" font-size="11" fill="#6b6b6b">노드 수는 두 배씩, 거리는 한 칸씩</text>
+  <text x="820" y="366" text-anchor="end" font-size="13" font-weight="700" fill="#2563eb">11</text>
+
+  <!-- bottom bar -->
+  <rect x="30" y="398" width="820" height="44" rx="10" fill="#eef2ff" stroke="#2563eb" stroke-width="1.5" />
+  <text x="440" y="425" text-anchor="middle" font-size="12" fill="#1a1a1a">같은 15개를 하나씩 push하면 최악 34번 — 깊은 레벨의 많은 노드가 저마다 루트까지 올라갈 수 있다</text>
+</svg>

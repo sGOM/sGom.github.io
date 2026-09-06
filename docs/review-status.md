@@ -11,7 +11,7 @@
 - [V] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)
 - [V] [JSON — 정의와 널리 쓰이게 된 과정](../src/content/posts/json-basics/index.md)
 - [V] [힙(Heap) — 배열 하나로 우선순위를 유지하는 원리](../src/content/posts/heap-basics/index.md)
-- [ ] [리팩토링의 경계 — 무엇까지가 리팩토링인가](../src/content/posts/refactoring-basics/index.md)
+- [V] [리팩토링의 경계 — 무엇까지가 리팩토링인가](../src/content/posts/refactoring-basics/index.md)
 - [ ] [환경 변수는 누가 물려주고 어디에 남는가](../src/content/posts/environment-variables/index.md)
 - [ ] [git merge 종류 — fast-forward, 머지 커밋, 스쿼시](../src/content/posts/git-merge-types/index.md)
 - [ ] [git worktree로 브랜치를 디렉터리째 나눠 쓰기](../src/content/posts/git-worktree/index.md)

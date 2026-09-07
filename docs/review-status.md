@@ -17,7 +17,7 @@
 - [ ] [git worktree로 브랜치를 디렉터리째 나눠 쓰기](../src/content/posts/git-worktree/index.md)
 - [ ] [Spring과 Spring Boot의 차이](../src/content/posts/spring-vs-spring-boot/index.md)
 - [ ] [OAuth2 기본개념 — 네 역할과 토큰 발급 흐름](../src/content/posts/oauth2-basics/index.md)
-- [ ] [트랜잭션과 ACID](../src/content/posts/transaction-and-acid/index.md)
+- [V] [트랜잭션과 ACID](../src/content/posts/transaction-and-acid/index.md)
 - [ ] [격리 수준과 세 가지 이상 현상](../src/content/posts/isolation-levels-and-anomalies/index.md)
 - [ ] [계층 구조를 부모 참조로 저장하는 Adjacency List](../src/content/posts/adjacency-list/index.md)
 - [ ] [계층 구조를 문자열로 저장하는 Path Enumeration](../src/content/posts/path-enumeration/index.md)

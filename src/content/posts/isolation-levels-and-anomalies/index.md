@@ -2,7 +2,7 @@
 title: 격리 수준과 세 가지 이상 현상
 description: SQL 표준이 정의한 4단계 격리 수준과 각 단계가 허용하는 이상 현상을 정리한다
 pubDate: 2026-08-09
-updatedDate: 2026-08-24
+updatedDate: 2026-09-07
 category: "데이터베이스"
 tags: ["기본개념", "Database", "트랜잭션"]
 ---
@@ -66,20 +66,31 @@ Phantom Read는 조회 대상이 행 하나가 아니라 범위라는 점만 다
 
 **격리 수준은 읽기 쪽 설정이다.** 트랜잭션 A의 격리 수준을 올려도 B가 쓰는 것을 막지는 못한다. A가 자기 조회 결과를 보호할 뿐이다.
 
-갱신 유실(lost update)처럼 쓰기끼리 충돌하는 문제는 격리 수준만으로 해결되지 않아 `SELECT ... FOR UPDATE`나 낙관적 락이 따로 필요하다.
+**갱신 유실(lost update)은 이 세 가지에 속하지 않는다.** 읽고 계산해서 쓰는 두 트랜잭션이 겹칠 때, 나중 쓰기가 앞선 쓰기를 덮어써 앞의 갱신이 사라지는 문제다.
+
+| 시각 | 트랜잭션 A | 트랜잭션 B |
+|---|---|---|
+| 1 | `SELECT balance FROM account WHERE id=1` → **50000** | |
+| 2 | | `SELECT balance FROM account WHERE id=1` → **50000** |
+| 3 | `UPDATE account SET balance=40000 WHERE id=1`, `COMMIT` | |
+| 4 | | `UPDATE account SET balance=30000 WHERE id=1`, `COMMIT` |
+
+A와 B가 각각 10000과 20000을 출금했는데 잔액은 30000이다. A의 출금이 사라졌다. B가 읽은 50000은 커밋된 값이었고 같은 행을 두 번 읽지도 않았으니 세 가지 어디에도 걸리지 않는다. 잘못이 읽기가 아니라 **읽은 값을 근거로 쓴 것**에 있고, 격리 수준은 읽기만 다룬다.
+
+그래서 락으로 푼다. `SELECT ... FOR UPDATE`로 읽는 시점에 행을 잠그거나, 버전 컬럼을 두고 `WHERE version = ?`로 갱신해 0건이면 재시도한다(낙관적 락). 조건 없는 증감이면 `SET balance = balance - 20000`으로 DB에서 계산하는 것이 가장 싸다.
 
 **SERIALIZABLE이 "한 줄로 실행"을 뜻하지는 않는다.** 결과가 어떤 직렬 실행 순서와 같아지도록 보장할 뿐, 실제로 동시 실행을 막는 방식은 구현마다 다르다.
 
 ## 구현체별 차이
 
-같은 이름의 격리 수준도 DBMS마다 기본값과 실제 동작이 다르다.
+같은 이름의 격리 수준도 DBMS마다 기본값과 실제 동작이 다르다. 어긋나는 방식은 넷으로 갈린다. 표준보다 더 강하게 막거나, 요청한 수준을 무시하거나, 한 단계가 아예 없거나, 표준에 없는 단계가 더 있다.
 
-| DBMS | 기본 격리 수준 | 특이점 |
+| DBMS | 기본 격리 수준 | 표준 표와 어긋나는 지점 |
 |---|---|---|
-| MySQL (InnoDB) | REPEATABLE READ | 갭 락·넥스트키 락으로 잠금 읽기의 Phantom Read를 상당 부분 막는다 |
-| PostgreSQL | READ COMMITTED | READ UNCOMMITTED를 요청해도 READ COMMITTED로 동작한다 |
-| Oracle | READ COMMITTED | REPEATABLE READ를 지원하지 않는다 |
-| H2 | READ COMMITTED | 표준 4단계 외에 `SNAPSHOT`이 더 있고, 문서가 Phantom Read를 막는다고 명시한 것은 그쪽이다 |
+| MySQL (InnoDB) | REPEATABLE READ | **표보다 강하다.** 갭 락·넥스트키 락으로 잠금 읽기의 Phantom Read를 상당 부분 막는다 |
+| PostgreSQL | READ COMMITTED | **요청을 무시한다.** READ UNCOMMITTED를 지정해도 READ COMMITTED로 동작한다 |
+| Oracle | READ COMMITTED | **단계가 빠져 있다.** REPEATABLE READ를 지원하지 않는다 |
+| H2 | READ COMMITTED | **표준에 없는 단계가 있다.** Phantom Read를 막는다고 문서가 명시한 것은 REPEATABLE READ가 아니라 `SNAPSHOT`이다 |
 
 표만 외우고 실무에 적용하면 틀리는 이유가 여기 있다. 자세한 내용과 재현 결과는 [트랜잭션 격리 수준은 DBMS마다 다르게 동작한다](/posts/transaction-isolation-levels/)에 있다.
 

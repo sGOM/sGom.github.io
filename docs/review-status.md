@@ -1,4 +1,4 @@
-# 최종 검수 목록
+﻿# 최종 검수 목록
 
 체크된 글은 **사용자가 직접 전체 내용을 읽고 납득·이해한 상태**다.
 체크된 글은 사용자가 그 글을 명시적으로 지목하지 않는 한 수정하지 않는다.
@@ -18,7 +18,7 @@
 - [ ] [Spring과 Spring Boot의 차이](../src/content/posts/spring-vs-spring-boot/index.md)
 - [ ] [OAuth2 기본개념 — 네 역할과 토큰 발급 흐름](../src/content/posts/oauth2-basics/index.md)
 - [V] [트랜잭션과 ACID](../src/content/posts/transaction-and-acid/index.md)
-- [ ] [격리 수준과 세 가지 이상 현상](../src/content/posts/isolation-levels-and-anomalies/index.md)
+- [V] [격리 수준과 세 가지 이상 현상](../src/content/posts/isolation-levels-and-anomalies/index.md)
 - [ ] [계층 구조를 부모 참조로 저장하는 Adjacency List](../src/content/posts/adjacency-list/index.md)
 - [ ] [계층 구조를 문자열로 저장하는 Path Enumeration](../src/content/posts/path-enumeration/index.md)
 - [ ] [계층 구조를 숫자 구간으로 저장하는 Nested Set](../src/content/posts/nested-set/index.md)

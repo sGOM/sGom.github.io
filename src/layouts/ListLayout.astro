@@ -23,9 +23,7 @@ const { title, description, heading, posts, groups, total, current } =
 
 <BaseLayout title={title} description={description} wide>
   <div class="list-layout">
-    <div class="list-aside">
-      <CategoryList groups={groups} total={total} current={current} />
-    </div>
+    <CategoryList groups={groups} total={total} current={current} />
     <div class="list-main">
       {heading && <h1>{heading}</h1>}
       {posts.length === 0 && <p>아직 글이 없습니다.</p>}

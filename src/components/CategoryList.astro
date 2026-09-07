@@ -24,48 +24,72 @@ const { groups, total, current } = Astro.props;
     </li>
     {groups.map(({ group, count, categories }) => (
       <li>
-        <a
-          href={`/groups/${encodeURIComponent(group)}/`}
-          class:list={[
-            current?.group === group &&
-              current?.category === undefined &&
-              'is-current',
-          ]}
-          aria-current={
-            current?.group === group && current?.category === undefined
-              ? 'page'
-              : undefined
-          }
+        <details
+          open
+          data-group={group}
+          data-current={current?.group === group ? '' : undefined}
         >
-          {group} <span class="count">({count})</span>
-        </a>
-        {categories.length > 0 && (
-          <ul class="categories">
-            {categories.map(({ category, count }) => (
-              <li>
-                <a
-                  href={`/categories/${encodeURIComponent(category)}/${encodeURIComponent(group)}/`}
-                  class:list={[
-                    current?.group === group &&
-                      current?.category === category &&
-                      'is-current',
-                  ]}
-                  aria-current={
-                    current?.group === group && current?.category === category
-                      ? 'page'
-                      : undefined
-                  }
-                >
-                  {category} <span class="count">({count})</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+          <summary>
+            <a
+              href={`/groups/${encodeURIComponent(group)}/`}
+              class:list={[
+                current?.group === group &&
+                  current?.category === undefined &&
+                  'is-current',
+              ]}
+              aria-current={
+                current?.group === group && current?.category === undefined
+                  ? 'page'
+                  : undefined
+              }
+            >
+              {group} <span class="count">({count})</span>
+            </a>
+          </summary>
+          {categories.length > 0 && (
+            <ul class="categories">
+              {categories.map(({ category, count }) => (
+                <li>
+                  <a
+                    href={`/categories/${encodeURIComponent(category)}/${encodeURIComponent(group)}/`}
+                    class:list={[
+                      current?.group === group &&
+                        current?.category === category &&
+                        'is-current',
+                    ]}
+                    aria-current={
+                      current?.group === group && current?.category === category
+                        ? 'page'
+                        : undefined
+                    }
+                  >
+                    {category} <span class="count">({count})</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </details>
       </li>
     ))}
   </ul>
 </aside>
+
+<script>
+  // 접힘 상태를 브라우저에 남긴다. 사이드바 클릭은 곧 페이지 이동이라
+  // 저장하지 않으면 매번 다시 펴진다. 현재 보고 있는 그룹은 항상 편다
+  for (const el of document.querySelectorAll<HTMLDetailsElement>(
+    '.category-list details'
+  )) {
+    const key = `category-list:${el.dataset.group}`;
+    if (el.dataset.current === undefined && localStorage.getItem(key) === '0') {
+      el.open = false;
+    }
+    el.addEventListener('toggle', () =>
+      localStorage.setItem(key, el.open ? '1' : '0')
+    );
+  }
+</script>
 
 <style>
   .category-list {
@@ -103,6 +127,16 @@ const { groups, total, current } = Astro.props;
     font-size: 0.85rem;
   }
 
+  summary {
+    cursor: pointer;
+    list-style-position: inside;
+  }
+
+  summary::marker {
+    color: var(--fg-muted);
+    font-size: 0.75em;
+  }
+
   a {
     color: var(--fg-muted);
   }
@@ -134,7 +168,7 @@ const { groups, total, current } = Astro.props;
     .groups {
       gap: 0.75rem;
     }
-    .groups > li {
+    .groups details {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;

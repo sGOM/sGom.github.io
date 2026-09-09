@@ -2,7 +2,7 @@
 title: JSON — 정의와 널리 쓰이게 된 과정
 description: JSON의 값 일곱 가지와 문법을 정리하고, XML이 쓰이던 자리를 넘겨받은 과정을 표준 문서의 연표로 따라간다
 pubDate: 2026-08-31
-updatedDate: 2026-09-06
+updatedDate: 2026-09-09
 category: "웹"
 tags: ["기본개념", "JSON", "직렬화"]
 ---
@@ -30,7 +30,7 @@ JSON은 그 문법을 값 일곱 가지와 구두점 몇 개로 끝낸다. [ECMA
 |---|---|---|
 | 객체(object) | `{"name": "kim", "age": 30}` | 이름-값 쌍의 모음. 이름은 큰따옴표 문자열이어야 한다 |
 | 배열(array) | `[1, 2, 3]` | 값의 나열. 원소 타입이 같을 필요는 없다 |
-| 문자열(string) | `"hello"` | 큰따옴표만. 홑따옴표는 문법 위반이다 |
+| 문자열(string) | `"hello"` | 큰따옴표만. 홑따옴표는 문법 위반이다. `"`, `\`, 제어문자는 이스케이프해야 한다 |
 | 숫자(number) | `-1.5e3` | 십진 표기 하나. 정수와 실수를 구분하지 않는다 |
 | `true` | `true` | 소문자 고정. 대문자 `True`는 문법 위반이다 |
 | `false` | `false` | 소문자 고정 |
@@ -46,7 +46,18 @@ JSON에 없는 것은 주석, 후행 쉼표, 홑따옴표, 따옴표 없는 키,
 
 언어마다 다른 수 타입을 통일하는 대신, 숫자를 어떻게 해석할지를 받는 쪽에 넘긴 것이다. 이 결정이 파서마다 다른 결과를 만든다.
 
-**문자열은 [유니코드 코드 포인트](https://www.unicode.org/glossary/#code_point)의 나열이다.** JSON 텍스트는 UTF-8로 인코딩하므로([RFC 8259 8.1절](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)) 어떤 문자든 그대로 적으면 된다. `\u`로 코드 포인트를 직접 적을 수도 있는데, 네 자리 16진수라 U+FFFF 바깥 문자는 [서로게이트 쌍](https://www.rfc-editor.org/rfc/rfc8259#section-7), 즉 `\u` 두 개로 쪼개 적는다. 어느 쪽으로 적어도 파서가 돌려주는 값은 같다.
+**문자열은 [유니코드 코드 포인트](https://www.unicode.org/glossary/#code_point)의 나열이다.** JSON 텍스트는 UTF-8로 인코딩하므로([RFC 8259 8.1절](https://www.rfc-editor.org/rfc/rfc8259#section-8.1)) 대부분의 문자는 그대로 적으면 된다. 예외는 셋이다. 큰따옴표 `"`, 역슬래시 `\`, 그리고 U+0000부터 U+001F까지의 [제어문자](https://www.unicode.org/glossary/#control_codes)는 문자열 안에 그대로 둘 수 없고 이스케이프해야 한다([RFC 8259 7절](https://www.rfc-editor.org/rfc/rfc8259#section-7)). 개행이 그 범위에 들어가므로 줄을 바꾸려면 `\n`으로 적는다.
+
+`\` 뒤에 올 수 있는 것은 `\"` `\\` `\/` `\b` `\f` `\n` `\r` `\t`와 `\uXXXX` 아홉 가지뿐이다. `\'`도 `\x41`도 없다. 이 중 제어문자에 이름이 붙은 것은 다섯이라, 나머지는 `\u00XX`로 적는다.
+
+| 이스케이프 | 대상 |
+|---|---|
+| `\"` `\\` | U+0022, U+005C. 이스케이프가 필수다 |
+| `\b` `\t` `\n` `\f` `\r` | U+0008, U+0009, U+000A, U+000C, U+000D. 이름이 붙은 제어문자 다섯이다 |
+| `\uXXXX` | 나머지 제어문자 27개를 포함한 모든 코드 포인트 |
+| `\/` | U+002F. 그대로 적어도 되므로 이것만 선택이다 |
+
+`\u`로 코드 포인트를 직접 적을 수도 있는데, 네 자리 16진수라 U+FFFF 바깥 문자는 [서로게이트 쌍](https://www.rfc-editor.org/rfc/rfc8259#section-7), 즉 `\u` 두 개로 쪼개 적는다. 어느 쪽으로 적어도 파서가 돌려주는 값은 같다.
 
 아래 실행 결과는 모두 Python 3.14.4와 Node.js v24.15.0에서 얻었다.
 
@@ -171,6 +182,8 @@ cases = {
     "주석": '{"a": 1 /* 설명 */}',
     "후행 쉼표": '{"a": 1,}',
     "홑따옴표": "{'a': 1}",
+    "따옴표 미이스케이프": '{"a": "he said "hi""}',
+    "개행 미이스케이프": '{"a": "1\n2"}',
     "두 줄": '{"a": 1}\n{"a": 2}',
     "중복 키": '{"a": 1, "a": 2}',
 }
@@ -186,11 +199,13 @@ $ python -X utf8 invalid.py
 주석 -> JSONDecodeError: Expecting ',' delimiter: line 1 column 9 (char 8)
 후행 쉼표 -> JSONDecodeError: Illegal trailing comma before end of object: line 1 column 8 (char 7)
 홑따옴표 -> JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+따옴표 미이스케이프 -> JSONDecodeError: Expecting ',' delimiter: line 1 column 17 (char 16)
+개행 미이스케이프 -> JSONDecodeError: Invalid control character at: line 1 column 9 (char 8)
 두 줄 -> JSONDecodeError: Extra data: line 2 column 1 (char 9)
 중복 키 -> {'a': 2}
 ```
 
-앞의 넷은 거부되고 중복 키만 통과한다. 두 줄 입력의 오류가 `Extra data: line 2 column 1`인 것은 첫 줄까지는 유효한 JSON 텍스트로 읽었다는 뜻이다. 통과한 중복 키가 왜 `{'a': 2}`가 되는지, 다른 파서도 같은 값을 주는지는 아래 파고들기 글에서 확인한다.
+앞의 여섯은 거부되고 중복 키만 통과한다. 이스케이프 없는 큰따옴표의 오류가 `Expecting ',' delimiter`인 것은 파서가 그 자리에서 문자열이 끝났다고 읽었다는 뜻이다. 값이 깨진 것이 아니라 문자열의 경계가 옮겨간다. 두 줄 입력의 오류가 `Extra data: line 2 column 1`인 것은 첫 줄까지는 유효한 JSON 텍스트로 읽었다는 뜻이다. 통과한 중복 키가 왜 `{'a': 2}`가 되는지, 다른 파서도 같은 값을 주는지는 아래 파고들기 글에서 확인한다.
 
 ## 더 깊이
 

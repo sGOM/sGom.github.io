@@ -20,6 +20,6 @@
   "devDependencies": {
     "pagefind": "^1.5.2",
     "tsx": "^4.23.11",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

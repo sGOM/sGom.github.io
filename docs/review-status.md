@@ -6,6 +6,7 @@
 
 새 글을 발행하면 이 목록에 체크 없이 한 줄 추가한다. 체크는 사용자만 한다.
 목록은 난이도 오름차순이다. 맨 끝에 붙이지 말고 선행 개념 글 뒤, 그 글을 전제하는 글 앞에 끼워 넣는다.
+- [ ] [표준화 기구 14곳 — 누가 무엇을 정하는가](../src/content/posts/standards-organizations/index.md)
 - [V] [부동소수점 — 0.1 + 0.2가 0.3이 아닌 이유](../src/content/posts/floating-point-basics/index.md)
 - [V] [버퍼 — 속도가 다른 두 쪽을 잇는 방법](../src/content/posts/buffer-overview/index.md)
 - [V] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)

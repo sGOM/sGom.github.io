@@ -1,13 +1,15 @@
 -- (a, b) IN ((..), (..)) 튜플 목록이 max_stack_depth를 넘기는 과정을 재현한다.
 --
---   psql -U postgres -f experiments/tuple-in-stack-depth/setup.sql
+--   저장소 랩:  docker compose -f experiments/compose.yml exec -T postgres psql -U postgres \
+--                 < experiments/tuple-in-stack-depth/setup.sql
+--   측정에 쓴 것: psql -U postgres -f experiments/tuple-in-stack-depth/setup.sql
 --
 -- 경계 튜플 수는 재귀 한 단계가 쓰는 스택에 달려 있고, 그 값은 컴파일러와 최적화
 -- 옵션에 좌우된다. 아래 하드코딩된 경계값(3438/6887/13786/20684/25858과 6890)은
 -- PostgreSQL 16.13 Ubuntu 빌드(16.13-0ubuntu0.24.04.1, gcc 13.3.0), ulimit -s 8192kB
 -- 에서 이분 탐색으로 찾은 값이다. 다른 빌드에서는 경계가 달라지므로, 그 환경에서는
 -- N이 통과하고 N+1이 실패하는 결과가 그대로 나오지 않을 수 있다.
--- 9번 블록은 ulimit -s가 8192kB일 때의 값을 쓴다.
+-- 11번 블록은 ulimit -s가 8192kB일 때의 값을 쓴다.
 --
 -- 튜플 목록은 \gexec로 생성한다. 목록을 직접 적으면 파일이 수 MB가 된다.
 
@@ -192,9 +194,15 @@ SELECT format('PREPARE c2 AS SELECT count(*) FROM order_item WHERE (order_id, li
 RESET max_stack_depth;
 
 
-\echo '=== 7. 계획 시간과 실행 시간 (한계 아래인 튜플 5,000개) ==='
--- EXPLAIN은 프레임을 더 쌓으므로 6,890개에서는 EXPLAIN 자체가 실패한다.
--- 두 모양이 모두 통과하는 5,000개에서 비교한다.
+\echo '=== 7. EXPLAIN은 프레임을 더 쌓는다 ==='
+-- 2a에서 그냥 던지면 통과했던 6,890개가, EXPLAIN을 붙이면 실패한다.
+SELECT format('EXPLAIN (COSTS OFF) SELECT count(*) FROM order_item WHERE (order_id, line_no) IN (%s);',
+              string_agg(format('(%s,1)', i), ','))
+FROM generate_series(1, 6890) i \gexec
+
+
+\echo '=== 8. 계획 시간과 실행 시간 (한계 아래인 튜플 5,000개) ==='
+-- 위 7번 때문에 6,890개로는 잴 수 없다. 두 모양이 모두 통과하는 5,000개에서 비교한다.
 -- 계획 본문을 5,000줄 찍지 않으려고 FORMAT JSON으로 받아 시간만 꺼낸다.
 
 DO $$
@@ -223,7 +231,7 @@ BEGIN
 END $$;
 
 
-\echo '=== 8. 두 모양의 계획 ==='
+\echo '=== 9. 두 모양의 계획 ==='
 EXPLAIN (COSTS OFF) SELECT * FROM order_item WHERE (order_id, line_no) IN ((1,1),(2,1),(3,1));
 EXPLAIN (COSTS OFF) SELECT * FROM order_item WHERE (order_id, line_no) IN (VALUES (1,1),(2,1),(3,1));
 
@@ -232,18 +240,18 @@ SELECT format('EXPLAIN (COSTS OFF) SELECT count(*) FROM order_item WHERE (order_
               string_agg(format('(%s,1)', i), ',')) FROM generate_series(1, 10000) i \gexec
 
 
-\echo '=== 9. 중복 키가 섞여도 건수가 같다 (세미조인) ==='
+\echo '=== 10. 중복 키가 섞여도 건수가 같다 (세미조인) ==='
 SELECT (SELECT count(*) FROM order_item
           WHERE (order_id, line_no) IN ((1,1),(2,1),(3,1),(1,1),(2,1)))        AS tuple_in,
        (SELECT count(*) FROM order_item
           WHERE (order_id, line_no) IN (VALUES (1,1),(2,1),(3,1),(1,1),(2,1))) AS values_in;
 
 
-\echo '=== 10. max_stack_depth는 ulimit -s에서 512kB를 뺀 값을 넘지 못한다 ==='
+\echo '=== 11. max_stack_depth는 ulimit -s에서 512kB를 뺀 값을 넘지 못한다 ==='
 SET max_stack_depth = '8MB';
 
 
-\echo '=== 11. 파라미터 타입 추론이 두 모양에서 갈린다 ==='
+\echo '=== 12. 파라미터 타입 추론이 두 모양에서 갈린다 ==='
 PREPARE q2 AS SELECT count(*) FROM order_item
  WHERE (order_id, line_no) IN (($1,$2),($3,$4));
 SELECT parameter_types FROM pg_prepared_statements WHERE name = 'q2';

@@ -34,3 +34,10 @@ src/content/posts/_drafts/
 
 # 글감 백로그. 개인 메모라 저장소에 넣지 않는다.
 docs/post-backlog.md
+
+# JVM 실험용 jar. experiments/<슬러그>/*.java 머리의 안내대로 내려받는다.
+lib/
+
+# 명세 원문 사본. 참고용이라 저장소에 넣지 않는다.
+posix3.html
+ecma-overview.html

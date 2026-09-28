@@ -11,7 +11,7 @@
 - [V] [버퍼 — 속도가 다른 두 쪽을 잇는 방법](../src/content/posts/buffer-overview/index.md)
 - [V] [POSIX — 표준이 정한 것과 구현이 덧붙인 것](../src/content/posts/posix-basics/index.md)
 - [V] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)
-- [ ] [문자 인코딩: 코드 포인트, UTF-8, 서로게이트 쌍](../src/content/posts/_drafts/character-encoding-basics/index.md) (초안)
+- [V] [문자 인코딩: 코드 포인트, UTF-8, 서로게이트 쌍](../src/content/posts/character-encoding-basics/index.md)
 - [V] [JSON — 정의와 널리 쓰이게 된 과정](../src/content/posts/json-basics/index.md)
 - [V] [힙(Heap) — 배열 하나로 우선순위를 유지하는 원리](../src/content/posts/heap-basics/index.md)
 - [ ] [함수, 메서드, 프로시저 — 헷갈리는 이름을 시그니처로 가르기](../src/content/posts/_drafts/function-and-method-terms/index.md) (초안)

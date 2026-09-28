@@ -9,7 +9,7 @@
 목록은 난이도 오름차순이다. 맨 끝에 붙이지 말고 선행 개념 글 뒤, 그 글을 전제하는 글 앞에 끼워 넣는다.
 - [V] [부동소수점 — 0.1 + 0.2가 0.3이 아닌 이유](../src/content/posts/floating-point-basics/index.md)
 - [V] [버퍼 — 속도가 다른 두 쪽을 잇는 방법](../src/content/posts/buffer-overview/index.md)
-- [ ] [POSIX — 표준이 정한 것과 구현이 덧붙인 것](../src/content/posts/_drafts/posix-basics/index.md) (초안)
+- [V] [POSIX — 표준이 정한 것과 구현이 덧붙인 것](../src/content/posts/_drafts/posix-basics/index.md) (초안)
 - [V] [POSIX가 정의한 줄과 파일 끝 개행](../src/content/posts/posix-line-and-trailing-newline/index.md)
 - [ ] [문자 인코딩: 코드 포인트, UTF-8, 서로게이트 쌍](../src/content/posts/_drafts/character-encoding-basics/index.md) (초안)
 - [V] [JSON — 정의와 널리 쓰이게 된 과정](../src/content/posts/json-basics/index.md)
